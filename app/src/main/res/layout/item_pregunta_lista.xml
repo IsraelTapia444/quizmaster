@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="12dp"
+    app:cardBackgroundColor="#F3C023"
+    app:cardCornerRadius="0dp"
+    app:cardElevation="4dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- ID de la pregunta (opcional, puede ser útil para debug) -->
+        <TextView
+            android:id="@+id/txtIdPregunta"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="ID: 1"
+            android:textColor="#1A1A2E"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:fontFamily="sans-serif-medium"
+            android:layout_marginBottom="8dp" />
+
+        <!-- Texto de la pregunta -->
+        <TextView
+            android:id="@+id/txtPreguntaLista"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="¿Cuál es la capital de España?"
+            android:textColor="#1A1A2E"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:fontFamily="sans-serif-black"
+            android:layout_marginBottom="12dp" />
+
+        <!-- Contenedor de opciones -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginBottom="8dp">
+
+            <TextView
+                android:id="@+id/txtOpcion1Lista"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="1. Madrid"
+                android:textColor="#1A1A2E"
+                android:textSize="14sp"
+                android:fontFamily="sans-serif"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:paddingTop="4dp"
+                android:paddingBottom="4dp" />
+
+            <TextView
+                android:id="@+id/txtOpcion2Lista"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="2. Barcelona"
+                android:textColor="#1A1A2E"
+                android:textSize="14sp"
+                android:fontFamily="sans-serif"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:paddingTop="4dp"
+                android:paddingBottom="4dp" />
+
+            <TextView
+                android:id="@+id/txtOpcion3Lista"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="3. Valencia"
+                android:textColor="#1A1A2E"
+                android:textSize="14sp"
+                android:fontFamily="sans-serif"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:paddingTop="4dp"
+                android:paddingBottom="4dp" />
+
+            <TextView
+                android:id="@+id/txtOpcion4Lista"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="4. Sevilla"
+                android:textColor="#1A1A2E"
+                android:textSize="14sp"
+                android:fontFamily="sans-serif"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:paddingTop="4dp"
+                android:paddingBottom="4dp" />
+
+        </LinearLayout>
+
+        <!-- Información adicional -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="12dp">
+
+            <TextView
+                android:id="@+id/txtRespuestaCorrectaLista"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Correcta: 1"
+                android:textColor="#0F3460"
+                android:textSize="13sp"
+                android:textStyle="bold"
+                android:fontFamily="sans-serif-medium" />
+
+            <TextView
+                android:id="@+id/txtDificultadLista"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Dificultad: Fácil"
+                android:textColor="#0F3460"
+                android:textSize="13sp"
+                android:textStyle="bold"
+                android:fontFamily="sans-serif-medium" />
+
+        </LinearLayout>
+
+        <!-- Botones de acción -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="end">
+
+            <Button
+                android:id="@+id/btnEditarPregunta"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="EDITAR"
+                android:textColor="#F5F5F5"
+                android:textSize="13sp"
+                android:textStyle="bold"
+                android:background="#0F3460"
+                android:fontFamily="sans-serif-black"
+                android:paddingStart="24dp"
+                android:paddingEnd="24dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:layout_marginEnd="8dp" />
+
+            <Button
+                android:id="@+id/btnEliminarPregunta"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="ELIMINAR"
+                android:textColor="#F5F5F5"
+                android:textSize="13sp"
+                android:textStyle="bold"
+                android:background="#E94560"
+                android:fontFamily="sans-serif-black"
+                android:paddingStart="24dp"
+                android:paddingEnd="24dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>

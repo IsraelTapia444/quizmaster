@@ -1,0 +1,263 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#1A1A2E"
+    tools:context=".PerfilActivity">
+
+    <!-- Header con icono de perfil -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:paddingTop="80dp"
+        android:paddingBottom="32dp">
+
+        <!-- Icono de perfil -->
+        <ImageView
+            android:id="@+id/imgIconoPerfil"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:src="@drawable/perfil"
+            android:contentDescription="Icono de perfil" />
+
+        <!-- Nombre de usuario -->
+        <TextView
+            android:id="@+id/txtNombreUsuario"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="USUARIO"
+            android:textColor="#F5F5F5"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:fontFamily="sans-serif-black"
+            android:layout_marginTop="16dp" />
+
+        <!-- Email de usuario -->
+        <TextView
+            android:id="@+id/txtEmailUsuario"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="usuario@email.com"
+            android:textColor="#F3C023"
+            android:textSize="16sp"
+            android:fontFamily="sans-serif"
+            android:layout_marginTop="8dp" />
+
+    </LinearLayout>
+
+    <!-- Contenedor de información del perfil -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:padding="24dp">
+
+        <!-- Card de estadísticas rápidas -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            app:cardBackgroundColor="#F3C023"
+            app:cardCornerRadius="0dp"
+            app:cardElevation="4dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="ESTADÍSTICAS"
+                    android:textColor="#1A1A2E"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:fontFamily="sans-serif-black"
+                    android:gravity="center"
+                    android:layout_marginBottom="12dp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:gravity="center">
+
+                        <TextView
+                            android:id="@+id/txtTotalPartidas"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0"
+                            android:textColor="#1A1A2E"
+                            android:textSize="28sp"
+                            android:textStyle="bold"
+                            android:fontFamily="sans-serif-black" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Partidas"
+                            android:textColor="#1A1A2E"
+                            android:textSize="14sp"
+                            android:fontFamily="sans-serif" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:gravity="center">
+
+                        <TextView
+                            android:id="@+id/txtMejorPuntuacion"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0%"
+                            android:textColor="#1A1A2E"
+                            android:textSize="28sp"
+                            android:textStyle="bold"
+                            android:fontFamily="sans-serif-black" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Mejor"
+                            android:textColor="#1A1A2E"
+                            android:textSize="14sp"
+                            android:fontFamily="sans-serif" />
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </androidx.cardview.widget.CardView>
+
+        <!-- Botón Cerrar Sesión -->
+        <Button
+            android:id="@+id/btnCerrarSesion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="CERRAR SESIÓN"
+            android:textColor="#F5F5F5"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:background="#E94560"
+            android:fontFamily="sans-serif-black"
+            android:paddingTop="16dp"
+            android:paddingBottom="16dp"
+            android:layout_marginTop="16dp" />
+
+        <!-- Botón Volver -->
+        <Button
+            android:id="@+id/btnVolver"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="VOLVER"
+            android:textColor="#F5F5F5"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:background="#0F3460"
+            android:fontFamily="sans-serif-black"
+            android:paddingTop="16dp"
+            android:paddingBottom="16dp"
+            android:layout_marginTop="8dp" />
+
+    </LinearLayout>
+
+    <!-- Barra inferior de navegación -->
+    <LinearLayout
+        android:id="@+id/bottomNav"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="#E94560"
+        android:padding="8dp"
+        android:paddingBottom="56dp"
+        android:gravity="center">
+
+        <Button
+            android:id="@+id/btnAddQuestion"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_weight="1"
+            android:layout_margin="4dp"
+            android:text="Añadir"
+            android:textColor="#F5F5F5"
+            android:textSize="11sp"
+            android:textStyle="bold"
+            android:background="#0F3460"
+            android:fontFamily="sans-serif-medium" />
+
+        <Button
+            android:id="@+id/btnFacil"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_weight="1"
+            android:layout_margin="4dp"
+            android:text="Fácil"
+            android:textColor="#1A1A2E"
+            android:textSize="11sp"
+            android:textStyle="bold"
+            android:background="#F3C023"
+            android:fontFamily="sans-serif-medium" />
+
+        <Button
+            android:id="@+id/btnMedio"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_weight="1"
+            android:layout_margin="4dp"
+            android:text="Medio"
+            android:textColor="#1A1A2E"
+            android:textSize="11sp"
+            android:textStyle="bold"
+            android:background="#F3C023"
+            android:fontFamily="sans-serif-medium" />
+
+        <Button
+            android:id="@+id/btnDificil"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_weight="1"
+            android:layout_margin="4dp"
+            android:text="Difícil"
+            android:textColor="#1A1A2E"
+            android:textSize="11sp"
+            android:textStyle="bold"
+            android:background="#F3C023"
+            android:fontFamily="sans-serif-medium" />
+
+        <Button
+            android:id="@+id/btnStats"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_weight="1"
+            android:layout_margin="4dp"
+            android:text="Stats"
+            android:textColor="#F5F5F5"
+            android:textSize="11sp"
+            android:textStyle="bold"
+            android:background="#0F3460"
+            android:fontFamily="sans-serif-medium" />
+    </LinearLayout>
+
+</LinearLayout>

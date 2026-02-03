@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#14213D"
+    android:padding="24dp"
+    android:gravity="center">
+
+    <!-- Logo -->
+    <ImageView
+        android:id="@+id/splashLogo"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:src="@drawable/logo"
+        android:contentDescription="Logo QuizMaster"
+        android:layout_marginBottom="16dp" />
+
+    <!-- Título -->
+    <TextView
+        android:id="@+id/titulo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="QuizMaster"
+        android:textColor="#FFFFFF"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="32dp" />
+
+    <!-- Email -->
+    <EditText
+        android:id="@+id/etEmail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Email"
+        android:inputType="textEmailAddress"
+        android:textColor="#FFFFFF"
+        android:textColorHint="#CCCCCC"
+        android:backgroundTint="#FFFFFF"
+        android:layout_marginBottom="16dp" />
+
+    <!-- Contraseña -->
+    <EditText
+        android:id="@+id/etPassword"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Contraseña"
+        android:inputType="textPassword"
+        android:textColor="#FFFFFF"
+        android:textColorHint="#CCCCCC"
+        android:backgroundTint="#FFFFFF"
+        android:layout_marginBottom="16dp" />
+
+    <!-- Checkbox -->
+    <CheckBox
+        android:id="@+id/checkDatos"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Guardar datos de inicio de sesión"
+        android:textColor="#FFFFFF"
+        android:layout_marginBottom="0dp" />
+
+    <TextView
+        android:id="@+id/goToRegister"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="¿No tienes cuenta? Regístrate"
+        android:textColor="#E94560"
+        android:textSize="16sp"
+        android:layout_marginVertical="5dp"
+        android:padding="4dp"
+        android:clickable="true"
+        android:focusable="true" />
+
+
+    <!-- Botón de login -->
+    <Button
+        android:id="@+id/btnLogin"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Iniciar Sesión"
+        android:textColor="#FFFFFF"
+        android:backgroundTint="#E94560"
+        android:textStyle="bold" />
+</LinearLayout>
