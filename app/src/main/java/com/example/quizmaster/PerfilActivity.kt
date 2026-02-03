@@ -11,6 +11,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
+import com.example.quizmaster.utils.UserSession
 
 class PerfilActivity : AppCompatActivity() {
 
@@ -29,6 +30,9 @@ class PerfilActivity : AppCompatActivity() {
     private lateinit var btnDificil: Button
     private lateinit var btnStats: Button
 
+    // UserSession
+    private lateinit var userSession: UserSession
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -36,6 +40,19 @@ class PerfilActivity : AppCompatActivity() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
         setContentView(R.layout.activity_perfil)
+
+        // Inicializar UserSession
+        userSession = UserSession(this)
+
+        // Verificar que el usuario esté logueado
+        if (!userSession.isLoggedIn()) {
+            // Si no está logueado, redirigir al Login
+            val intent = Intent(this, LoginActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
+            finish()
+            return
+        }
 
         // Inicializar componentes
         inicializarComponentes()
@@ -78,18 +95,15 @@ class PerfilActivity : AppCompatActivity() {
     }
 
     private fun cargarDatosUsuario() {
-        // TODO: Aquí cargarás los datos del usuario desde SharedPreferences o tu BD
-        // Por ahora usamos datos de ejemplo
+        // Obtener datos de UserSession
+        val nombreUsuario = userSession.getUserName() ?: "Usuario"
+        val email = userSession.getUserEmail() ?: "email@example.com"
 
-        // Ejemplo:
-        // val sharedPref = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
-        // val nombreUsuario = sharedPref.getString("nombre_usuario", "Usuario")
-        // val email = sharedPref.getString("email", "usuario@email.com")
+        txtNombreUsuario.text = nombreUsuario.uppercase()
+        txtEmailUsuario.text = email
 
-        txtNombreUsuario.text = "USUARIO"
-        txtEmailUsuario.text = "usuario@email.com"
-
-        // TODO: Cargar estadísticas del usuario
+        // TODO: Cargar estadísticas del usuario desde la API
+        // Por ahora valores por defecto
         txtTotalPartidas.text = "0"
         txtMejorPuntuacion.text = "0%"
     }
@@ -157,10 +171,8 @@ class PerfilActivity : AppCompatActivity() {
     }
 
     private fun cerrarSesion() {
-        // TODO: Aquí limpiarás las SharedPreferences o el token de sesión
-        // Ejemplo:
-        // val sharedPref = getSharedPreferences("UserPrefs", Context.MODE_PRIVATE)
-        // sharedPref.edit().clear().apply()
+        // Limpiar sesión
+        userSession.logout()
 
         Toast.makeText(this, "Sesión cerrada", Toast.LENGTH_SHORT).show()
 
