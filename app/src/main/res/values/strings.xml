@@ -3,4 +3,10 @@
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
+
+    <!-- Configuración -->
+    <string name="profile_image">Imagen de perfil</string>
+    <string name="sound_icon">Icono de sonido</string>
+    <string name="vibration_icon">Icono de vibración</string>
+    <string name="notifications_icon">Icono de notificaciones</string>
 </resources>

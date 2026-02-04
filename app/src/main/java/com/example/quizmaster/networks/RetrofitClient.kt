@@ -8,12 +8,8 @@ import java.util.concurrent.TimeUnit
 
 object RetrofitClient {
 
-    // ⚠️ IMPORTANTE: Cambia esta URL por la de tu servidor
-    // Ejemplos:
-    // - Servidor local (PC): "http://192.168.1.100/quizmaster/api/"
-    // - XAMPP local: "http://10.0.2.2/quizmaster/api/" (para emulador Android)
-    // - Servidor remoto: "https://tudominio.com/api/"
-    private const val BASE_URL = "http://10.0.2.2/quizmaster/api/"
+    //private const val BASE_URL = "http://10.0.2.2/quizmaster/api/"
+    private const val BASE_URL = "https://strychnic-agonistically-pia.ngrok-free.dev/quizmaster/api/"
 
     // Configuración de logging para debug
     private val loggingInterceptor = HttpLoggingInterceptor().apply {
