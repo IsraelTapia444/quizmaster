@@ -67,11 +67,16 @@ data class PartidaRequest(
     val puntuacion: Int
 )
 
-// Modelo de estadísticas
+// Modelo de estadísticas ACTUALIZADO
 data class Estadisticas(
+    val usuario_id: Int,
+    val nombre_usuario: String,
     val total_partidas: Int,
+    val puntuacion_media: Double,
     val mejor_puntuacion: Int,
     val peor_puntuacion: Int,
     val ultima_puntuacion: Int,
-    val promedio: Double
+    val ultima_fecha: String?,
+    val posicion_ranking: Int,
+    val total_usuarios: Int
 )

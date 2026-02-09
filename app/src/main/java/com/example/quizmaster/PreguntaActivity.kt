@@ -25,6 +25,7 @@ class PreguntaActivity : AppCompatActivity() {
     private lateinit var etOpcion4: EditText
     private lateinit var etRespuestaCorrecta: EditText
     private lateinit var etDificultad: EditText
+    private lateinit var txtTitulo: TextView
 
     // Botones principales
     private lateinit var btnEnviar: Button
@@ -40,6 +41,10 @@ class PreguntaActivity : AppCompatActivity() {
     private lateinit var btnDificil: Button
     private lateinit var btnStats: Button
 
+    // Variables para modo edición
+    private var modoEdicion = false
+    private var preguntaId = -1
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -51,6 +56,9 @@ class PreguntaActivity : AppCompatActivity() {
         // Inicializar componentes
         inicializarComponentes()
 
+        // Verificar si es modo edición
+        verificarModoEdicion()
+
         // Aplicar WindowInsets
         aplicarWindowInsets()
 
@@ -60,6 +68,9 @@ class PreguntaActivity : AppCompatActivity() {
     }
 
     private fun inicializarComponentes() {
+        // Título (si existe en tu layout)
+        // txtTitulo = findViewById(R.id.txtTitulo)
+
         // Componentes del formulario
         etPregunta = findViewById(R.id.etPregunta)
         etOpcion1 = findViewById(R.id.etOpcion1)
@@ -88,6 +99,36 @@ class PreguntaActivity : AppCompatActivity() {
         btnStats = findViewById(R.id.btnStats)
     }
 
+    private fun verificarModoEdicion() {
+        modoEdicion = intent.getBooleanExtra("modo_edicion", false)
+
+        if (modoEdicion) {
+            preguntaId = intent.getIntExtra("pregunta_id", -1)
+
+            // Cambiar título y texto del botón
+            // txtTitulo?.text = "EDITAR PREGUNTA"
+            btnEnviar.text = "ACTUALIZAR"
+
+            // Pre-llenar campos con los datos recibidos
+            etPregunta.setText(intent.getStringExtra("pregunta") ?: "")
+            etOpcion1.setText(intent.getStringExtra("opcion1") ?: "")
+            etOpcion2.setText(intent.getStringExtra("opcion2") ?: "")
+            etOpcion3.setText(intent.getStringExtra("opcion3") ?: "")
+            etOpcion4.setText(intent.getStringExtra("opcion4") ?: "")
+            etRespuestaCorrecta.setText(intent.getIntExtra("correcta", 1).toString())
+
+            // Convertir dificultad de texto a número
+            val dificultadTexto = intent.getStringExtra("dificultad") ?: "media"
+            val dificultadNumero = when (dificultadTexto.lowercase()) {
+                "facil" -> 1
+                "media" -> 2
+                "dificil" -> 3
+                else -> 2
+            }
+            etDificultad.setText(dificultadNumero.toString())
+        }
+    }
+
     private fun aplicarWindowInsets() {
         val bottomNav = findViewById<android.view.View>(R.id.bottomNav)
         ViewCompat.setOnApplyWindowInsetsListener(bottomNav) { view, windowInsets ->
@@ -98,12 +139,16 @@ class PreguntaActivity : AppCompatActivity() {
     }
 
     private fun configurarBotones() {
-        // Botón ENVIAR - Insertar pregunta en la BD
+        // Botón ENVIAR/ACTUALIZAR
         btnEnviar.setOnClickListener {
-            insertarPregunta()
+            if (modoEdicion) {
+                actualizarPregunta()
+            } else {
+                insertarPregunta()
+            }
         }
 
-        // Botón LISTAR - Ir a ListaActivity
+        // Botón LISTAR
         btnListar.setOnClickListener {
             val intent = Intent(this, ListaActivity::class.java)
             startActivity(intent)
@@ -149,7 +194,7 @@ class PreguntaActivity : AppCompatActivity() {
             opcion3 = opcion3,
             opcion4 = opcion4,
             correcta = respuestaCorrecta,
-            categoria = "General", // Puedes agregar un campo para esto si quieres
+            categoria = "General",
             dificultad = dificultadTexto
         )
 
@@ -164,18 +209,14 @@ class PreguntaActivity : AppCompatActivity() {
                     val apiResponse = response.body()
 
                     if (apiResponse != null && apiResponse.success) {
-                        // Pregunta insertada exitosamente
                         Toast.makeText(
                             this@PreguntaActivity,
                             "Pregunta guardada exitosamente",
                             Toast.LENGTH_SHORT
                         ).show()
 
-                        // Limpiar formulario
                         limpiarFormulario()
-
                     } else {
-                        // Error del servidor
                         Toast.makeText(
                             this@PreguntaActivity,
                             apiResponse?.message ?: "Error al guardar pregunta",
@@ -183,7 +224,6 @@ class PreguntaActivity : AppCompatActivity() {
                         ).show()
                     }
                 } else {
-                    // Error HTTP
                     Toast.makeText(
                         this@PreguntaActivity,
                         "Error del servidor: ${response.code()}",
@@ -193,18 +233,106 @@ class PreguntaActivity : AppCompatActivity() {
             }
 
             override fun onFailure(call: Call<ApiResponse>, t: Throwable) {
-                // Re-habilitar botón
                 btnEnviar.isEnabled = true
                 btnEnviar.text = "ENVIAR"
 
-                // Error de conexión
                 Toast.makeText(
                     this@PreguntaActivity,
                     "Error de conexión: ${t.message}",
                     Toast.LENGTH_LONG
                 ).show()
 
-                // Log para debug
+                android.util.Log.e("PreguntaActivity", "Error: ${t.message}", t)
+            }
+        })
+    }
+
+    private fun actualizarPregunta() {
+        // Obtener datos del formulario
+        val pregunta = etPregunta.text.toString().trim()
+        val opcion1 = etOpcion1.text.toString().trim()
+        val opcion2 = etOpcion2.text.toString().trim()
+        val opcion3 = etOpcion3.text.toString().trim()
+        val opcion4 = etOpcion4.text.toString().trim()
+        val respuestaCorrectaStr = etRespuestaCorrecta.text.toString().trim()
+        val dificultadStr = etDificultad.text.toString().trim()
+
+        // Validaciones
+        if (!validarCampos(pregunta, opcion1, opcion2, opcion3, opcion4, respuestaCorrectaStr, dificultadStr)) {
+            return
+        }
+
+        // Convertir valores
+        val respuestaCorrecta = respuestaCorrectaStr.toInt()
+        val dificultadNivel = dificultadStr.toInt()
+
+        val dificultadTexto = when (dificultadNivel) {
+            1 -> "facil"
+            2 -> "media"
+            3 -> "dificil"
+            else -> "media"
+        }
+
+        // Deshabilitar botón mientras se procesa
+        btnEnviar.isEnabled = false
+        btnEnviar.text = "ACTUALIZANDO..."
+
+        // Crear objeto de petición
+        val preguntaRequest = PreguntaRequest(
+            pregunta = pregunta,
+            opcion1 = opcion1,
+            opcion2 = opcion2,
+            opcion3 = opcion3,
+            opcion4 = opcion4,
+            correcta = respuestaCorrecta,
+            categoria = "General",
+            dificultad = dificultadTexto
+        )
+
+        // Llamada a la API para actualizar
+        RetrofitClient.apiService.actualizarPregunta(preguntaId, preguntaRequest).enqueue(object : Callback<ApiResponse> {
+            override fun onResponse(call: Call<ApiResponse>, response: Response<ApiResponse>) {
+                btnEnviar.isEnabled = true
+                btnEnviar.text = "ACTUALIZAR"
+
+                if (response.isSuccessful) {
+                    val apiResponse = response.body()
+
+                    if (apiResponse != null && apiResponse.success) {
+                        Toast.makeText(
+                            this@PreguntaActivity,
+                            "Pregunta actualizada exitosamente",
+                            Toast.LENGTH_SHORT
+                        ).show()
+
+                        // Volver a ListaActivity
+                        finish()
+                    } else {
+                        Toast.makeText(
+                            this@PreguntaActivity,
+                            apiResponse?.message ?: "Error al actualizar pregunta",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                } else {
+                    Toast.makeText(
+                        this@PreguntaActivity,
+                        "Error del servidor: ${response.code()}",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+            }
+
+            override fun onFailure(call: Call<ApiResponse>, t: Throwable) {
+                btnEnviar.isEnabled = true
+                btnEnviar.text = "ACTUALIZAR"
+
+                Toast.makeText(
+                    this@PreguntaActivity,
+                    "Error de conexión: ${t.message}",
+                    Toast.LENGTH_LONG
+                ).show()
+
                 android.util.Log.e("PreguntaActivity", "Error: ${t.message}", t)
             }
         })
@@ -219,7 +347,6 @@ class PreguntaActivity : AppCompatActivity() {
         respuestaCorrecta: String,
         dificultad: String
     ): Boolean {
-        // Validar que no estén vacíos
         if (pregunta.isEmpty()) {
             etPregunta.error = "La pregunta es obligatoria"
             etPregunta.requestFocus()
@@ -262,7 +389,6 @@ class PreguntaActivity : AppCompatActivity() {
             return false
         }
 
-        // Validar que respuesta correcta sea un número entre 1 y 4
         val respuesta = respuestaCorrecta.toIntOrNull()
         if (respuesta == null || respuesta < 1 || respuesta > 4) {
             etRespuestaCorrecta.error = "Debe ser un número entre 1 y 4"
@@ -270,7 +396,6 @@ class PreguntaActivity : AppCompatActivity() {
             return false
         }
 
-        // Validar que dificultad sea un número entre 1 y 3
         val dif = dificultad.toIntOrNull()
         if (dif == null || dif < 1 || dif > 3) {
             etDificultad.error = "Debe ser 1 (Fácil), 2 (Medio) o 3 (Difícil)"
@@ -290,39 +415,39 @@ class PreguntaActivity : AppCompatActivity() {
         etRespuestaCorrecta.text.clear()
         etDificultad.text.clear()
 
-        // Enfocar en el primer campo
         etPregunta.requestFocus()
     }
 
     private fun configurarMenuInferior() {
-        // Botón Añadir Pregunta (ya estamos aquí)
         btnAddQuestion.setOnClickListener {
-            // Ya estamos en PreguntaActivity
-            Toast.makeText(this, "Ya estás en Añadir Pregunta", Toast.LENGTH_SHORT).show()
+            if (modoEdicion) {
+                // Si estamos editando, volver al modo normal
+                val intent = Intent(this, PreguntaActivity::class.java)
+                startActivity(intent)
+                finish()
+            } else {
+                Toast.makeText(this, "Ya estás en Añadir Pregunta", Toast.LENGTH_SHORT).show()
+            }
         }
 
-        // Botón Fácil
         btnFacil.setOnClickListener {
             val intent = Intent(this, MainActivity::class.java)
             intent.putExtra("dificultad", 1)
             startActivity(intent)
         }
 
-        // Botón Medio
         btnMedio.setOnClickListener {
             val intent = Intent(this, MainActivity::class.java)
             intent.putExtra("dificultad", 2)
             startActivity(intent)
         }
 
-        // Botón Difícil
         btnDificil.setOnClickListener {
             val intent = Intent(this, MainActivity::class.java)
             intent.putExtra("dificultad", 3)
             startActivity(intent)
         }
 
-        // Botón Stats
         btnStats.setOnClickListener {
             val intent = Intent(this, StatsActivity::class.java)
             startActivity(intent)

@@ -25,7 +25,12 @@ class ListaActivity : AppCompatActivity() {
     private lateinit var recyclerViewLista: RecyclerView
     private lateinit var txtSinPreguntas: TextView
     private lateinit var btnIconoPerfil: android.widget.ImageView
-    private lateinit var progressBar: ProgressBar
+
+    // Botones de filtro
+    private lateinit var btnFiltroTodas: Button
+    private lateinit var btnFiltroFacil: Button
+    private lateinit var btnFiltroMedio: Button
+    private lateinit var btnFiltroDificil: Button
 
     // Botones del menú inferior
     private lateinit var btnAddQuestion: Button
@@ -37,6 +42,9 @@ class ListaActivity : AppCompatActivity() {
     // Adapter y lista de preguntas
     private lateinit var adapter: ListaAdapter
     private val listaPreguntas = mutableListOf<Pregunta>()
+
+    // Filtro actual
+    private var filtroActual = "todas" // "todas", "facil", "media", "dificil"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,10 +63,13 @@ class ListaActivity : AppCompatActivity() {
         // Aplicar WindowInsets
         aplicarWindowInsets()
 
+        // Configurar filtros
+        configurarFiltros()
+
         // Configurar menú inferior
         configurarMenuInferior()
 
-        // Cargar preguntas desde la API
+        // Cargar preguntas
         cargarPreguntas()
     }
 
@@ -67,8 +78,11 @@ class ListaActivity : AppCompatActivity() {
         txtSinPreguntas = findViewById(R.id.txtSinPreguntas)
         btnIconoPerfil = findViewById(R.id.btnIconoPerfil)
 
-        // ProgressBar (si no existe en tu layout, puedes comentar)
-        // progressBar = findViewById(R.id.progressBar)
+
+        btnFiltroTodas = findViewById(R.id.btnFiltroTodas)
+        btnFiltroFacil = findViewById(R.id.btnFiltroFacil)
+        btnFiltroMedio = findViewById(R.id.btnFiltroMedio)
+        btnFiltroDificil = findViewById(R.id.btnFiltroDificil)
 
         btnAddQuestion = findViewById(R.id.btnAddQuestion)
         btnFacil = findViewById(R.id.btnFacil)
@@ -84,7 +98,6 @@ class ListaActivity : AppCompatActivity() {
     }
 
     private fun configurarRecyclerView() {
-        // Configurar adapter con callbacks
         adapter = ListaAdapter(
             preguntas = listaPreguntas,
             onEditarClick = { pregunta ->
@@ -95,7 +108,6 @@ class ListaActivity : AppCompatActivity() {
             }
         )
 
-        // Configurar RecyclerView
         recyclerViewLista.layoutManager = LinearLayoutManager(this)
         recyclerViewLista.adapter = adapter
     }
@@ -109,40 +121,115 @@ class ListaActivity : AppCompatActivity() {
         }
     }
 
+    private fun configurarFiltros() {
+
+        // Agregar opción de filtro con un menú contextual
+        recyclerViewLista.setOnLongClickListener {
+            mostrarMenuFiltros()
+            true
+        }
+
+        btnFiltroTodas.setOnClickListener {
+            filtroActual = "todas"
+            actualizarEstiloFiltros()
+            cargarPreguntas()
+        }
+
+        btnFiltroFacil.setOnClickListener {
+            filtroActual = "facil"
+            actualizarEstiloFiltros()
+            cargarPreguntasPorDificultad("facil")
+        }
+
+        btnFiltroMedio.setOnClickListener {
+            filtroActual = "media"
+            actualizarEstiloFiltros()
+            cargarPreguntasPorDificultad("media")
+        }
+
+        btnFiltroDificil.setOnClickListener {
+            filtroActual = "dificil"
+            actualizarEstiloFiltros()
+            cargarPreguntasPorDificultad("dificil")
+        }
+    }
+
+    private fun mostrarMenuFiltros() {
+        val opciones = arrayOf("Todas", "Fácil", "Medio", "Difícil")
+
+        AlertDialog.Builder(this)
+            .setTitle("Filtrar por Dificultad")
+            .setItems(opciones) { dialog, which ->
+                when (which) {
+                    0 -> {
+                        filtroActual = "todas"
+                        cargarPreguntas()
+                    }
+                    1 -> {
+                        filtroActual = "facil"
+                        cargarPreguntasPorDificultad("facil")
+                    }
+                    2 -> {
+                        filtroActual = "media"
+                        cargarPreguntasPorDificultad("media")
+                    }
+                    3 -> {
+                        filtroActual = "dificil"
+                        cargarPreguntasPorDificultad("dificil")
+                    }
+                }
+                dialog.dismiss()
+            }
+            .show()
+    }
+
+    private fun actualizarEstiloFiltros() {
+        // Resetear estilos de todos los botones
+        // Código de ejemplo si tienes botones de filtro:
+        /*
+        btnFiltroTodas.setBackgroundColor(getColor(R.color.filtro_inactivo))
+        btnFiltroFacil.setBackgroundColor(getColor(R.color.filtro_inactivo))
+        btnFiltroMedio.setBackgroundColor(getColor(R.color.filtro_inactivo))
+        btnFiltroDificil.setBackgroundColor(getColor(R.color.filtro_inactivo))
+
+        // Resaltar el filtro activo
+        when (filtroActual) {
+            "todas" -> btnFiltroTodas.setBackgroundColor(getColor(R.color.filtro_activo))
+            "facil" -> btnFiltroFacil.setBackgroundColor(getColor(R.color.filtro_activo))
+            "media" -> btnFiltroMedio.setBackgroundColor(getColor(R.color.filtro_activo))
+            "dificil" -> btnFiltroDificil.setBackgroundColor(getColor(R.color.filtro_activo))
+        }
+        */
+    }
+
     private fun cargarPreguntas() {
-        // Mostrar loading (si tienes ProgressBar)
-        // progressBar?.visibility = View.VISIBLE
         txtSinPreguntas.visibility = View.GONE
         recyclerViewLista.visibility = View.GONE
 
-        // Llamada a la API para obtener todas las preguntas
         RetrofitClient.apiService.obtenerTodasLasPreguntas().enqueue(object : Callback<List<Pregunta>> {
             override fun onResponse(call: Call<List<Pregunta>>, response: Response<List<Pregunta>>) {
-                // Ocultar loading
-                // progressBar?.visibility = View.GONE
-
                 if (response.isSuccessful) {
                     val preguntas = response.body()
 
                     if (preguntas != null && preguntas.isNotEmpty()) {
-                        // Mostrar preguntas
                         listaPreguntas.clear()
                         listaPreguntas.addAll(preguntas)
                         adapter.notifyDataSetChanged()
 
                         recyclerViewLista.visibility = View.VISIBLE
                         txtSinPreguntas.visibility = View.GONE
+
+                        // Actualizar título con cantidad
+                        supportActionBar?.title = "Preguntas (${preguntas.size})"
                     } else {
-                        // No hay preguntas
                         recyclerViewLista.visibility = View.GONE
                         txtSinPreguntas.visibility = View.VISIBLE
                         txtSinPreguntas.text = "No hay preguntas registradas"
                     }
                 } else {
-                    // Error HTTP
                     recyclerViewLista.visibility = View.GONE
                     txtSinPreguntas.visibility = View.VISIBLE
-                    txtSinPreguntas.text = "Error al cargar preguntas: ${response.code()}"
+                    txtSinPreguntas.text = "Error al cargar preguntas"
 
                     Toast.makeText(
                         this@ListaActivity,
@@ -153,13 +240,9 @@ class ListaActivity : AppCompatActivity() {
             }
 
             override fun onFailure(call: Call<List<Pregunta>>, t: Throwable) {
-                // Ocultar loading
-                // progressBar?.visibility = View.GONE
-
-                // Error de conexión
                 recyclerViewLista.visibility = View.GONE
                 txtSinPreguntas.visibility = View.VISIBLE
-                txtSinPreguntas.text = "Error de conexión\nVerifica tu internet"
+                txtSinPreguntas.text = "Error de conexión\nMantén presionado para filtrar"
 
                 Toast.makeText(
                     this@ListaActivity,
@@ -167,15 +250,73 @@ class ListaActivity : AppCompatActivity() {
                     Toast.LENGTH_LONG
                 ).show()
 
-                // Log para debug
+                android.util.Log.e("ListaActivity", "Error: ${t.message}", t)
+            }
+        })
+    }
+
+    private fun cargarPreguntasPorDificultad(dificultad: String) {
+        txtSinPreguntas.visibility = View.GONE
+        recyclerViewLista.visibility = View.GONE
+
+        RetrofitClient.apiService.obtenerPreguntasPorDificultad(dificultad).enqueue(object : Callback<List<Pregunta>> {
+            override fun onResponse(call: Call<List<Pregunta>>, response: Response<List<Pregunta>>) {
+                if (response.isSuccessful) {
+                    val preguntas = response.body()
+
+                    if (preguntas != null && preguntas.isNotEmpty()) {
+                        listaPreguntas.clear()
+                        listaPreguntas.addAll(preguntas)
+                        adapter.notifyDataSetChanged()
+
+                        recyclerViewLista.visibility = View.VISIBLE
+                        txtSinPreguntas.visibility = View.GONE
+
+                        // Capitalizar primera letra
+                        val dificultadTexto = dificultad.replaceFirstChar { it.uppercase() }
+                        supportActionBar?.title = "Preguntas $dificultadTexto (${preguntas.size})"
+
+                        Toast.makeText(
+                            this@ListaActivity,
+                            "Mostrando ${preguntas.size} preguntas de dificultad $dificultadTexto",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    } else {
+                        recyclerViewLista.visibility = View.GONE
+                        txtSinPreguntas.visibility = View.VISIBLE
+                        val dificultadTexto = dificultad.replaceFirstChar { it.uppercase() }
+                        txtSinPreguntas.text = "No hay preguntas de dificultad $dificultadTexto"
+                    }
+                } else {
+                    recyclerViewLista.visibility = View.GONE
+                    txtSinPreguntas.visibility = View.VISIBLE
+                    txtSinPreguntas.text = "Error al cargar preguntas"
+
+                    Toast.makeText(
+                        this@ListaActivity,
+                        "Error del servidor: ${response.code()}",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+            }
+
+            override fun onFailure(call: Call<List<Pregunta>>, t: Throwable) {
+                recyclerViewLista.visibility = View.GONE
+                txtSinPreguntas.visibility = View.VISIBLE
+                txtSinPreguntas.text = "Error de conexión"
+
+                Toast.makeText(
+                    this@ListaActivity,
+                    "Error de conexión: ${t.message}",
+                    Toast.LENGTH_LONG
+                ).show()
+
                 android.util.Log.e("ListaActivity", "Error: ${t.message}", t)
             }
         })
     }
 
     private fun editarPregunta(pregunta: Pregunta) {
-        // TODO: Implementar edición de pregunta
-        // Por ahora, ir a PreguntaActivity con los datos
         val intent = Intent(this, PreguntaActivity::class.java)
         intent.putExtra("modo_edicion", true)
         intent.putExtra("pregunta_id", pregunta.id)
@@ -205,32 +346,32 @@ class ListaActivity : AppCompatActivity() {
     }
 
     private fun eliminarPregunta(preguntaId: Int, position: Int) {
-        // Llamada a la API para eliminar
         RetrofitClient.apiService.eliminarPregunta(preguntaId).enqueue(object : Callback<ApiResponse> {
             override fun onResponse(call: Call<ApiResponse>, response: Response<ApiResponse>) {
                 if (response.isSuccessful) {
                     val apiResponse = response.body()
 
                     if (apiResponse != null && apiResponse.success) {
-                        // Pregunta eliminada exitosamente
                         Toast.makeText(
                             this@ListaActivity,
                             "Pregunta eliminada exitosamente",
                             Toast.LENGTH_SHORT
                         ).show()
 
-                        // Eliminar de la lista local
                         listaPreguntas.removeAt(position)
                         adapter.notifyItemRemoved(position)
 
-                        // Si no quedan preguntas, mostrar mensaje
                         if (listaPreguntas.isEmpty()) {
                             recyclerViewLista.visibility = View.GONE
                             txtSinPreguntas.visibility = View.VISIBLE
-                            txtSinPreguntas.text = "No hay preguntas registradas"
+                            txtSinPreguntas.text = when (filtroActual) {
+                                "facil" -> "No hay preguntas fáciles"
+                                "media" -> "No hay preguntas medias"
+                                "dificil" -> "No hay preguntas difíciles"
+                                else -> "No hay preguntas registradas"
+                            }
                         }
                     } else {
-                        // Error del servidor
                         Toast.makeText(
                             this@ListaActivity,
                             apiResponse?.message ?: "Error al eliminar pregunta",
@@ -238,7 +379,6 @@ class ListaActivity : AppCompatActivity() {
                         ).show()
                     }
                 } else {
-                    // Error HTTP
                     Toast.makeText(
                         this@ListaActivity,
                         "Error del servidor: ${response.code()}",
@@ -248,48 +388,39 @@ class ListaActivity : AppCompatActivity() {
             }
 
             override fun onFailure(call: Call<ApiResponse>, t: Throwable) {
-                // Error de conexión
                 Toast.makeText(
                     this@ListaActivity,
                     "Error de conexión: ${t.message}",
                     Toast.LENGTH_LONG
                 ).show()
 
-                // Log para debug
                 android.util.Log.e("ListaActivity", "Error eliminando: ${t.message}", t)
             }
         })
     }
 
     private fun configurarMenuInferior() {
-        // Botón Añadir Pregunta
         btnAddQuestion.setOnClickListener {
             val intent = Intent(this, PreguntaActivity::class.java)
             startActivity(intent)
         }
 
-        // Botón Fácil
+        // Los botones del menú inferior también sirven como filtros rápidos
         btnFacil.setOnClickListener {
-            val intent = Intent(this, MainActivity::class.java)
-            intent.putExtra("dificultad", 1)
-            startActivity(intent)
+            filtroActual = "facil"
+            cargarPreguntasPorDificultad("facil")
         }
 
-        // Botón Medio
         btnMedio.setOnClickListener {
-            val intent = Intent(this, MainActivity::class.java)
-            intent.putExtra("dificultad", 2)
-            startActivity(intent)
+            filtroActual = "media"
+            cargarPreguntasPorDificultad("media")
         }
 
-        // Botón Difícil
         btnDificil.setOnClickListener {
-            val intent = Intent(this, MainActivity::class.java)
-            intent.putExtra("dificultad", 3)
-            startActivity(intent)
+            filtroActual = "dificil"
+            cargarPreguntasPorDificultad("dificil")
         }
 
-        // Botón Stats
         btnStats.setOnClickListener {
             val intent = Intent(this, StatsActivity::class.java)
             startActivity(intent)
@@ -298,7 +429,12 @@ class ListaActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        // Recargar preguntas al volver a la actividad
-        cargarPreguntas()
+        // Recargar preguntas según el filtro actual
+        when (filtroActual) {
+            "todas" -> cargarPreguntas()
+            "facil" -> cargarPreguntasPorDificultad("facil")
+            "media" -> cargarPreguntasPorDificultad("media")
+            "dificil" -> cargarPreguntasPorDificultad("dificil")
+        }
     }
 }

@@ -1,137 +1,261 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#1A1A2E">
+    android:background="#1A1A2E"
+    tools:context=".StatsActivity">
 
-    <RelativeLayout
+    <LinearLayout
+        android:id="@+id/main"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
         <!-- Contenedor principal con scroll -->
         <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_above="@+id/bottomNav"
+            android:layout_height="0dp"
+            android:layout_weight="1"
             android:fillViewport="true">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center_horizontal"
                 android:orientation="vertical"
-                android:padding="24dp">
+                android:padding="24dp"
+                android:gravity="center_horizontal">
 
-                <!-- Título -->
+                <!-- Título con nombre del usuario -->
                 <TextView
+                    android:id="@+id/tvNombreUsuario"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_marginTop="115dp"
-                    android:layout_marginBottom="48dp"
-                    android:fontFamily="sans-serif-black"
-                    android:letterSpacing="0.05"
                     android:text="ESTADÍSTICAS"
                     android:textColor="#F5F5F5"
-                    android:textSize="32sp"
-                    android:textStyle="bold" />
+                    android:textSize="28sp"
+                    android:textStyle="bold"
+                    android:layout_gravity="center_horizontal"
+                    android:fontFamily="sans-serif-black"
+                    android:letterSpacing="0.05"
+                    android:layout_marginBottom="48dp"
+                    android:layout_marginTop="100dp"/>
 
-                <!-- Total Partidas -->
+                <!-- Card de Total Partidas -->
+                <androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    app:cardBackgroundColor="#F3C023"
+                    app:cardCornerRadius="0dp"
+                    app:cardElevation="4dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="20dp"
+                        android:gravity="center">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="TOTAL PARTIDAS"
+                            android:textColor="#1A1A2E"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            android:fontFamily="sans-serif-medium"
+                            android:layout_marginBottom="8dp" />
+
+                        <TextView
+                            android:id="@+id/tvTotalPartidas"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0"
+                            android:textColor="#1A1A2E"
+                            android:textSize="48sp"
+                            android:textStyle="bold"
+                            android:fontFamily="sans-serif-black" />
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+
+                <!-- Card de Puntuación Media -->
+                <androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    app:cardBackgroundColor="#0F3460"
+                    app:cardCornerRadius="0dp"
+                    app:cardElevation="4dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="20dp"
+                        android:gravity="center">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="PUNTUACIÓN MEDIA"
+                            android:textColor="#F5F5F5"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            android:fontFamily="sans-serif-medium"
+                            android:layout_marginBottom="8dp" />
+
+                        <TextView
+                            android:id="@+id/tvPuntuacionMedia"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0"
+                            android:textColor="#F3C023"
+                            android:textSize="42sp"
+                            android:textStyle="bold"
+                            android:fontFamily="sans-serif-black" />
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+
+                <!-- Contenedor de 3 estadísticas en fila -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center"
+                    android:layout_marginBottom="16dp">
+
+                    <!-- Mejor Puntuación -->
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_margin="4dp"
+                        app:cardBackgroundColor="#F3C023"
+                        app:cardCornerRadius="0dp"
+                        app:cardElevation="4dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="16dp"
+                            android:gravity="center">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="MEJOR PUNTUACIÓN"
+                                android:textColor="#1A1A2E"
+                                android:textSize="12sp"
+                                android:textStyle="bold"
+                                android:fontFamily="sans-serif-medium"
+                                android:layout_marginBottom="4dp" />
+
+                            <TextView
+                                android:id="@+id/tvMejorPuntuacion"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="0"
+                                android:textColor="#1A1A2E"
+                                android:textSize="28sp"
+                                android:textStyle="bold"
+                                android:fontFamily="sans-serif-black" />
+                        </LinearLayout>
+                    </androidx.cardview.widget.CardView>
+
+                    <!-- Peor Puntuación -->
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_margin="4dp"
+                        app:cardBackgroundColor="#E94560"
+                        app:cardCornerRadius="0dp"
+                        app:cardElevation="4dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="16dp"
+                            android:gravity="center">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="PEOR PUNTUACIÓN"
+                                android:textColor="#F5F5F5"
+                                android:textSize="12sp"
+                                android:textStyle="bold"
+                                android:fontFamily="sans-serif-medium"
+                                android:layout_marginBottom="4dp" />
+
+                            <TextView
+                                android:id="@+id/tvPeorPuntuacion"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="0"
+                                android:textColor="#F5F5F5"
+                                android:textSize="28sp"
+                                android:textStyle="bold"
+                                android:fontFamily="sans-serif-black" />
+                        </LinearLayout>
+                    </androidx.cardview.widget.CardView>
+
+                </LinearLayout>
+
+                <!-- Card de Última Puntuación -->
+                <androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    app:cardBackgroundColor="#0F3460"
+                    app:cardCornerRadius="0dp"
+                    app:cardElevation="4dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="20dp"
+                        android:gravity="center">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="ÚLTIMA PARTIDA"
+                            android:textColor="#F5F5F5"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            android:fontFamily="sans-serif-medium"
+                            android:layout_marginBottom="8dp" />
+
+                        <TextView
+                            android:id="@+id/tvUltimaPuntuacion"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0"
+                            android:textColor="#F3C023"
+                            android:textSize="38sp"
+                            android:textStyle="bold"
+                            android:fontFamily="sans-serif-black" />
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+
+                <!-- TextView para mensaje cuando no hay estadísticas -->
                 <TextView
+                    android:id="@+id/txtSinEstadisticas"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="12dp"
-                    android:fontFamily="sans-serif-medium"
-                    android:text="TOTAL PARTIDAS"
+                    android:text="No hay estadísticas disponibles"
                     android:textColor="#F5F5F5"
                     android:textSize="18sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/tvTotalPartidas"
-                    android:layout_width="match_parent"
-                    android:layout_height="60dp"
-                    android:layout_marginBottom="32dp"
-                    android:background="#F3C023"
-                    android:fontFamily="sans-serif-black"
+                    android:fontFamily="sans-serif"
                     android:gravity="center"
-                    android:text="150"
-                    android:textColor="#1A1A2E"
-                    android:textSize="24sp"
-                    android:textStyle="bold" />
-
-                <!-- Mejor Puntuación -->
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="12dp"
-                    android:fontFamily="sans-serif-medium"
-                    android:text="MEJOR PUNTUACIÓN"
-                    android:textColor="#F5F5F5"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/tvMejorPuntuacion"
-                    android:layout_width="match_parent"
-                    android:layout_height="60dp"
-                    android:layout_marginBottom="32dp"
-                    android:background="#F3C023"
-                    android:fontFamily="sans-serif-black"
-                    android:gravity="center"
-                    android:text="95"
-                    android:textColor="#1A1A2E"
-                    android:textSize="24sp"
-                    android:textStyle="bold" />
-
-                <!-- Peor Puntuación -->
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="12dp"
-                    android:fontFamily="sans-serif-medium"
-                    android:text="PEOR PUNTUACIÓN"
-                    android:textColor="#F5F5F5"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/tvPeorPuntuacion"
-                    android:layout_width="match_parent"
-                    android:layout_height="60dp"
-                    android:layout_marginBottom="32dp"
-                    android:background="#F3C023"
-                    android:fontFamily="sans-serif-black"
-                    android:gravity="center"
-                    android:text="75"
-                    android:textColor="#1A1A2E"
-                    android:textSize="24sp"
-                    android:textStyle="bold" />
-
-                <!-- Última Puntuación -->
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="12dp"
-                    android:fontFamily="sans-serif-medium"
-                    android:text="ÚLTIMA PUNTUACIÓN"
-                    android:textColor="#F5F5F5"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/tvUltimaPuntuacion"
-                    android:layout_width="match_parent"
-                    android:layout_height="60dp"
-                    android:layout_marginBottom="32dp"
-                    android:background="#F3C023"
-                    android:fontFamily="sans-serif-black"
-                    android:gravity="center"
-                    android:text="60%"
-                    android:textColor="#1A1A2E"
-                    android:textSize="24sp"
-                    android:textStyle="bold" />
+                    android:layout_marginTop="32dp"
+                    android:visibility="gone" />
 
             </LinearLayout>
 
@@ -142,7 +266,6 @@
             android:id="@+id/bottomNav"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
             android:orientation="horizontal"
             android:background="#E94560"
             android:padding="8dp"
@@ -215,13 +338,13 @@
                 android:fontFamily="sans-serif-medium" />
         </LinearLayout>
 
-    </RelativeLayout>
+    </LinearLayout>
 
     <!-- Icono de perfil en la esquina superior izquierda -->
     <ImageView
         android:id="@+id/btnIconoPerfil"
-        android:layout_width="90dp"
-        android:layout_height="90dp"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
         android:src="@drawable/perfil"
         android:layout_gravity="start|top"
         android:layout_marginStart="16dp"
