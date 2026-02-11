@@ -179,10 +179,10 @@ class StatsActivity : AppCompatActivity() {
 
         // Llenar datos
         tvTotalPartidas.text = stats.total_partidas.toString()
-        tvPuntuacionMedia.text = String.format("%.1f%%", stats.puntuacion_media)
-        tvMejorPuntuacion.text = "${stats.mejor_puntuacion}%"
-        tvPeorPuntuacion.text = "${stats.peor_puntuacion}%"
-        tvUltimaPuntuacion.text = "${stats.ultima_puntuacion}%"
+        tvPuntuacionMedia.text = String.format("%.1f", stats.puntuacion_media)
+        tvMejorPuntuacion.text = "${stats.mejor_puntuacion}"
+        tvPeorPuntuacion.text = "${stats.peor_puntuacion}"
+        tvUltimaPuntuacion.text = "${stats.ultima_puntuacion}"
 
         // Si tienes TextView para ranking
         // tvPosicionRanking?.text = "Posición ${stats.posicion_ranking} de ${stats.total_usuarios}"
@@ -213,10 +213,10 @@ class StatsActivity : AppCompatActivity() {
 
         // Mostrar valores por defecto
         tvTotalPartidas.text = "0"
-        tvPuntuacionMedia.text = "0.0%"
-        tvMejorPuntuacion.text = "0%"
-        tvPeorPuntuacion.text = "0%"
-        tvUltimaPuntuacion.text = "0%"
+        tvPuntuacionMedia.text = "0.0"
+        tvMejorPuntuacion.text = "0"
+        tvPeorPuntuacion.text = "0"
+        tvUltimaPuntuacion.text = "0"
 
         // Hacer visibles con valores por defecto
         tvTotalPartidas.visibility = View.VISIBLE

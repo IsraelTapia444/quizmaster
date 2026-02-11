@@ -1,11 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!--  Paleta de colores QuizMaster  -->
+    <color name="fondo_principal">#1A1A2E</color>
+    <color name="amarillo_vibrante">#F3C023</color>
+    <color name="azul_vibrante">#0F3460</color>
+    <color name="rojo_coral">#E94560</color>
+    <color name="blanco_suave">#F5F5F5</color>
+    <!--  Colores adicionales para el juego  -->
+    <color name="verde_acierto">#4CAF50</color>
+    <color name="rojo_error">#F44336</color>
+    <color name="texto_normal">#F5F5F5</color>
+    <!--  Colores del sistema (mantener compatibilidad)  -->
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+
     <color name="purple_200">#FFBB86FC</color>
     <color name="purple_500">#FF6200EE</color>
     <color name="purple_700">#FF3700B3</color>
     <color name="teal_200">#FF03DAC5</color>
     <color name="teal_700">#FF018786</color>
-    <color name="black">#FF000000</color>
     <color name="background">#1A1A2E</color>
 
     <!-- Colores para configuración -->
@@ -14,5 +27,4 @@
     <color name="primary">#6200EE</color>
     <color name="danger">#DC3545</color>
     <color name="bottom_nav_bg">#2D2D2D</color>
-    <color name="white">#FFFFFF</color>
 </resources>
