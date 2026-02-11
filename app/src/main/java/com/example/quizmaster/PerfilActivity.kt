@@ -3,37 +3,43 @@ package com.example.quizmaster
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
+import android.widget.Switch
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.SwitchCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
-import com.example.quizmaster.utils.ConfigManager
 import com.example.quizmaster.utils.UserSession
+import com.example.quizmaster.database.PreferenciasDBHelper
 
 class PerfilActivity : AppCompatActivity() {
 
-    // Componentes UI - Información del usuario
+    // Componentes UI
     private lateinit var txtNombreUsuario: TextView
     private lateinit var txtEmailUsuario: TextView
     private lateinit var txtTotalPartidas: TextView
     private lateinit var txtMejorPuntuacion: TextView
-
-    // Componentes UI - Configuración
-    private lateinit var switchSonidos: SwitchCompat
-    private lateinit var switchVibraciones: SwitchCompat
-    private lateinit var switchNotificaciones: SwitchCompat
-
-    // Componentes UI - Botones
     private lateinit var btnCerrarSesion: Button
     private lateinit var btnVolver: Button
 
-    // UserSession
+    // Switches de configuración
+    private lateinit var switchSonidos: Switch
+    private lateinit var switchVibracion: Switch
+    private lateinit var switchNotificaciones: Switch
+
+    // Botones del menú inferior
+    private lateinit var btnAddQuestion: Button
+    private lateinit var btnFacil: Button
+    private lateinit var btnMedio: Button
+    private lateinit var btnDificil: Button
+    private lateinit var btnStats: Button
+
+    // UserSession y DB
     private lateinit var userSession: UserSession
+    private lateinit var preferenciasDRHelper: PreferenciasDBHelper
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,15 +49,12 @@ class PerfilActivity : AppCompatActivity() {
 
         setContentView(R.layout.activity_perfil)
 
-        // Inicializar ConfigManager (por si acaso no se hizo en Application)
-        ConfigManager.init(this)
-
-        // Inicializar UserSession
+        // Inicializar UserSession y DB
         userSession = UserSession(this)
+        preferenciasDRHelper = PreferenciasDBHelper(this)
 
         // Verificar que el usuario esté logueado
         if (!userSession.isLoggedIn()) {
-            // Si no está logueado, redirigir al Login
             val intent = Intent(this, LoginActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             startActivity(intent)
@@ -62,35 +65,40 @@ class PerfilActivity : AppCompatActivity() {
         // Inicializar componentes
         inicializarComponentes()
 
+        // Aplicar WindowInsets
+        aplicarWindowInsets()
+
         // Cargar datos del usuario
         cargarDatosUsuario()
 
-        // Cargar configuración
-        cargarConfiguracion()
+        // Cargar preferencias
+        cargarPreferencias()
 
         // Configurar botones
         configurarBotones()
 
-        // Configurar switches de configuración
-        configurarSwitches()
+        // Configurar menú inferior
+        configurarMenuInferior()
     }
 
     private fun inicializarComponentes() {
-        // Información del usuario
         txtNombreUsuario = findViewById(R.id.txtNombreUsuario)
         txtEmailUsuario = findViewById(R.id.txtEmailUsuario)
         txtTotalPartidas = findViewById(R.id.txtTotalPartidas)
         txtMejorPuntuacion = findViewById(R.id.txtMejorPuntuacion)
-
-        // Switches de configuración
-        switchSonidos = findViewById(R.id.switchSonidos)
-        switchVibraciones = findViewById(R.id.switchVibraciones)
-        switchNotificaciones = findViewById(R.id.switchNotificaciones)
-
-        // Botones
         btnCerrarSesion = findViewById(R.id.btnCerrarSesion)
         btnVolver = findViewById(R.id.btnVolver)
 
+        // Switches de configuración
+        switchSonidos = findViewById(R.id.switchSonidos)
+        switchVibracion = findViewById(R.id.switchVibracion)
+        switchNotificaciones = findViewById(R.id.switchNotificaciones)
+
+        btnAddQuestion = findViewById(R.id.btnAddQuestion)
+        btnFacil = findViewById(R.id.btnFacil)
+        btnMedio = findViewById(R.id.btnMedio)
+        btnDificil = findViewById(R.id.btnDificil)
+        btnStats = findViewById(R.id.btnStats)
     }
 
     private fun aplicarWindowInsets() {
@@ -103,7 +111,6 @@ class PerfilActivity : AppCompatActivity() {
     }
 
     private fun cargarDatosUsuario() {
-        // Obtener datos de UserSession
         val nombreUsuario = userSession.getUserName() ?: "Usuario"
         val email = userSession.getUserEmail() ?: "email@example.com"
 
@@ -111,87 +118,85 @@ class PerfilActivity : AppCompatActivity() {
         txtEmailUsuario.text = email
 
         // TODO: Cargar estadísticas del usuario desde la API
-        // Por ahora valores por defecto
         txtTotalPartidas.text = "0"
         txtMejorPuntuacion.text = "0%"
     }
 
-    /**
-     * Carga la configuración actual desde la base de datos SQLite
-     * y actualiza el estado de los switches
-     */
-    private fun cargarConfiguracion() {
-        try {
-            val config = ConfigManager.getConfig()
+    private fun cargarPreferencias() {
+        val userId = userSession.getUserId()
+        val preferencias = preferenciasDRHelper.obtenerPreferencias(userId)
 
-            // Actualizar los switches con la configuración guardada
-            // Usamos setChecked sin trigger del listener
-            switchSonidos.isChecked = config.soundEnabled
-            switchVibraciones.isChecked = config.vibrationEnabled
-            switchNotificaciones.isChecked = config.notificationsEnabled
+        // Establecer estado de los switches
+        switchSonidos.isChecked = preferencias.sonidosActivados
+        switchVibracion.isChecked = preferencias.vibracionActivada
+        switchNotificaciones.isChecked = preferencias.notificacionesActivadas
 
-        } catch (e: Exception) {
+        // Configurar listeners
+        switchSonidos.setOnCheckedChangeListener { _, isChecked ->
+            preferenciasDRHelper.actualizarSonidos(userId, isChecked)
             Toast.makeText(
                 this,
-                "Error al cargar la configuración",
+                if (isChecked) "Sonidos activados" else "Sonidos desactivados",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+
+        switchVibracion.setOnCheckedChangeListener { _, isChecked ->
+            preferenciasDRHelper.actualizarVibracion(userId, isChecked)
+            Toast.makeText(
+                this,
+                if (isChecked) "Vibración activada" else "Vibración desactivada",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+
+        switchNotificaciones.setOnCheckedChangeListener { _, isChecked ->
+            preferenciasDRHelper.actualizarNotificaciones(userId, isChecked)
+            Toast.makeText(
+                this,
+                if (isChecked) "Notificaciones activadas" else "Notificaciones desactivadas",
                 Toast.LENGTH_SHORT
             ).show()
         }
     }
 
-    /**
-     * Configura los listeners de los switches de configuración
-     */
-    private fun configurarSwitches() {
-        // Switch de Sonidos
-        switchSonidos.setOnCheckedChangeListener { _, isChecked ->
-            val success = ConfigManager.setSoundEnabled(isChecked)
-            if (success) {
-                val mensaje = if (isChecked) "Sonidos activados" else "Sonidos desactivados"
-                Toast.makeText(this, mensaje, Toast.LENGTH_SHORT).show()
-            } else {
-                Toast.makeText(this, "Error al actualizar configuración", Toast.LENGTH_SHORT).show()
-                // Revertir el cambio si falló
-                switchSonidos.isChecked = !isChecked
-            }
-        }
-
-        // Switch de Vibraciones
-        switchVibraciones.setOnCheckedChangeListener { _, isChecked ->
-            val success = ConfigManager.setVibrationEnabled(isChecked)
-            if (success) {
-                val mensaje = if (isChecked) "Vibraciones activadas" else "Vibraciones desactivadas"
-                Toast.makeText(this, mensaje, Toast.LENGTH_SHORT).show()
-            } else {
-                Toast.makeText(this, "Error al actualizar configuración", Toast.LENGTH_SHORT).show()
-                // Revertir el cambio si falló
-                switchVibraciones.isChecked = !isChecked
-            }
-        }
-
-        // Switch de Notificaciones
-        switchNotificaciones.setOnCheckedChangeListener { _, isChecked ->
-            val success = ConfigManager.setNotificationsEnabled(isChecked)
-            if (success) {
-                val mensaje = if (isChecked) "Notificaciones activadas" else "Notificaciones desactivadas"
-                Toast.makeText(this, mensaje, Toast.LENGTH_SHORT).show()
-            } else {
-                Toast.makeText(this, "Error al actualizar configuración", Toast.LENGTH_SHORT).show()
-                // Revertir el cambio si falló
-                switchNotificaciones.isChecked = !isChecked
-            }
-        }
-    }
-
     private fun configurarBotones() {
-        // Botón Cerrar Sesión
         btnCerrarSesion.setOnClickListener {
             mostrarDialogoCerrarSesion()
         }
 
-        // Botón Volver
         btnVolver.setOnClickListener {
-            finish() // Cierra esta actividad y vuelve a la anterior
+            finish()
+        }
+    }
+
+    private fun configurarMenuInferior() {
+        btnAddQuestion.setOnClickListener {
+            val intent = Intent(this, PreguntaActivity::class.java)
+            startActivity(intent)
+        }
+
+        btnFacil.setOnClickListener {
+            val intent = Intent(this, MainActivity::class.java)
+            intent.putExtra("dificultad", 1)
+            startActivity(intent)
+        }
+
+        btnMedio.setOnClickListener {
+            val intent = Intent(this, MainActivity::class.java)
+            intent.putExtra("dificultad", 2)
+            startActivity(intent)
+        }
+
+        btnDificil.setOnClickListener {
+            val intent = Intent(this, MainActivity::class.java)
+            intent.putExtra("dificultad", 3)
+            startActivity(intent)
+        }
+
+        btnStats.setOnClickListener {
+            val intent = Intent(this, StatsActivity::class.java)
+            startActivity(intent)
         }
     }
 
@@ -211,12 +216,10 @@ class PerfilActivity : AppCompatActivity() {
     }
 
     private fun cerrarSesion() {
-        // Limpiar sesión
         userSession.logout()
 
         Toast.makeText(this, "Sesión cerrada", Toast.LENGTH_SHORT).show()
 
-        // Ir al LoginActivity y limpiar el stack de actividades
         val intent = Intent(this, LoginActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(intent)

@@ -1,5 +1,6 @@
 package com.example.quizmaster
 
+import android.content.Context
 import android.content.Intent
 import android.media.MediaPlayer
 import android.os.Bundle
@@ -17,6 +18,12 @@ import com.example.quizmaster.models.PartidaRequest
 import com.example.quizmaster.models.Pregunta
 import com.example.quizmaster.network.RetrofitClient
 import com.example.quizmaster.utils.UserSession
+import com.example.quizmaster.utils.SonidosHelper
+import com.example.quizmaster.utils.NotificacionesHelper
+import com.example.quizmaster.database.PreferenciasDBHelper
+import android.os.VibrationEffect
+import android.os.Vibrator
+import android.os.Build
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -69,6 +76,12 @@ class MainActivity : AppCompatActivity() {
     // UserSession
     private lateinit var userSession: UserSession
 
+    // Helpers
+    private lateinit var sonidosHelper: SonidosHelper
+    private lateinit var notificacionesHelper: NotificacionesHelper
+    private lateinit var preferenciasDRHelper: PreferenciasDBHelper
+    private var vibrator: Vibrator? = null
+
     // MediaPlayers para sonidos
     private var sonidoAcierto: MediaPlayer? = null
     private var sonidoFallo: MediaPlayer? = null
@@ -86,6 +99,12 @@ class MainActivity : AppCompatActivity() {
 
         // Inicializar UserSession
         userSession = UserSession(this)
+
+        // Inicializar helpers
+        sonidosHelper = SonidosHelper(this)
+        notificacionesHelper = NotificacionesHelper(this)
+        preferenciasDRHelper = PreferenciasDBHelper(this)
+        vibrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
 
         // Verificar si está logueado
         if (!userSession.isLoggedIn()) {
@@ -183,8 +202,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun inicializarSonidos() {
+        // Los sonidos ahora se manejan con SonidosHelper
+        // Mantenemos compatibilidad con versiones anteriores
         try {
-            // Sonidos del sistema (puedes reemplazarlos con archivos propios en res/raw/)
             sonidoAcierto = MediaPlayer.create(this, android.media.RingtoneManager.getDefaultUri(android.media.RingtoneManager.TYPE_NOTIFICATION))
             sonidoFallo = MediaPlayer.create(this, android.media.RingtoneManager.getDefaultUri(android.media.RingtoneManager.TYPE_ALARM))
         } catch (e: Exception) {
@@ -373,18 +393,20 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun reproducirSonidoAcierto() {
-        try {
-            sonidoAcierto?.start()
-        } catch (e: Exception) {
-            android.util.Log.e("MainActivity", "Error reproduciendo sonido: ${e.message}")
+        val userId = userSession.getUserId()
+        val preferencias = preferenciasDRHelper.obtenerPreferencias(userId)
+
+        if (preferencias.sonidosActivados) {
+            sonidosHelper.reproducirAcierto()
         }
     }
 
     private fun reproducirSonidoFallo() {
-        try {
-            sonidoFallo?.start()
-        } catch (e: Exception) {
-            android.util.Log.e("MainActivity", "Error reproduciendo sonido: ${e.message}")
+        val userId = userSession.getUserId()
+        val preferencias = preferenciasDRHelper.obtenerPreferencias(userId)
+
+        if (preferencias.sonidosActivados) {
+            sonidosHelper.reproducirFallo()
         }
     }
 
@@ -404,6 +426,14 @@ class MainActivity : AppCompatActivity() {
         tvPuntuacionFinal.text = "$puntuacion"
         tvAciertos.text = "Aciertos: $aciertos"
         tvFallos.text = "Fallos: $fallos"
+
+        // Reproducir sonido de fin de partida
+        val userId = userSession.getUserId()
+        val preferencias = preferenciasDRHelper.obtenerPreferencias(userId)
+
+        if (preferencias.sonidosActivados) {
+            sonidosHelper.reproducirFinPartida()
+        }
 
         // Guardar partida en la BD
         guardarPartida()
@@ -479,10 +509,17 @@ class MainActivity : AppCompatActivity() {
                         if (puntuacion >= mejorPuntuacion && puntuacion > 0) {
                             if (puntuacion == mejorPuntuacion && stats.total_partidas > 1) {
                                 tvComparacion.text = "¡Igualaste tu mejor puntuación!"
+                                tvComparacion.setTextColor(getColor(R.color.verde_acierto))
                             } else {
                                 tvComparacion.text = "🎉 ¡NUEVA MEJOR PUNTUACIÓN! 🎉"
+                                tvComparacion.setTextColor(getColor(R.color.verde_acierto))
+
+                                // Mostrar notificación de nuevo récord
+                                val preferencias = preferenciasDRHelper.obtenerPreferencias(userId)
+                                if (preferencias.notificacionesActivadas) {
+                                    notificacionesHelper.mostrarNotificacionMejorPuntuacion(puntuacion)
+                                }
                             }
-                            tvComparacion.setTextColor(getColor(R.color.verde_acierto))
                         } else {
                             tvComparacion.text = "Tu mejor puntuación es: $mejorPuntuacion"
                             tvComparacion.setTextColor(getColor(R.color.texto_normal))
@@ -528,6 +565,7 @@ class MainActivity : AppCompatActivity() {
         // Liberar recursos de sonidos
         sonidoAcierto?.release()
         sonidoFallo?.release()
+        sonidosHelper.release()
         // Cancelar handlers pendientes
         handler.removeCallbacksAndMessages(null)
     }

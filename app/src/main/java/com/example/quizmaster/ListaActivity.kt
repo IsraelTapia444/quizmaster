@@ -15,6 +15,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.quizmaster.models.ApiResponse
 import com.example.quizmaster.models.Pregunta
 import com.example.quizmaster.network.RetrofitClient
+import com.example.quizmaster.utils.NotificacionesHelper
+import com.example.quizmaster.database.PreferenciasDBHelper
+import com.example.quizmaster.utils.UserSession
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -46,6 +49,11 @@ class ListaActivity : AppCompatActivity() {
     // Filtro actual
     private var filtroActual = "todas" // "todas", "facil", "media", "dificil"
 
+    // Helpers
+    private lateinit var notificacionesHelper: NotificacionesHelper
+    private lateinit var preferenciasDRHelper: PreferenciasDBHelper
+    private lateinit var userSession: UserSession
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -53,6 +61,11 @@ class ListaActivity : AppCompatActivity() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
         setContentView(R.layout.activity_lista)
+
+        // Inicializar helpers
+        userSession = UserSession(this)
+        notificacionesHelper = NotificacionesHelper(this)
+        preferenciasDRHelper = PreferenciasDBHelper(this)
 
         // Inicializar componentes
         inicializarComponentes()
@@ -78,11 +91,11 @@ class ListaActivity : AppCompatActivity() {
         txtSinPreguntas = findViewById(R.id.txtSinPreguntas)
         btnIconoPerfil = findViewById(R.id.btnIconoPerfil)
 
-
-        btnFiltroTodas = findViewById(R.id.btnFiltroTodas)
-        btnFiltroFacil = findViewById(R.id.btnFiltroFacil)
-        btnFiltroMedio = findViewById(R.id.btnFiltroMedio)
-        btnFiltroDificil = findViewById(R.id.btnFiltroDificil)
+        // Botones de filtro (si no existen en tu layout, coméntalos)
+        // btnFiltroTodas = findViewById(R.id.btnFiltroTodas)
+        // btnFiltroFacil = findViewById(R.id.btnFiltroFacil)
+        // btnFiltroMedio = findViewById(R.id.btnFiltroMedio)
+        // btnFiltroDificil = findViewById(R.id.btnFiltroDificil)
 
         btnAddQuestion = findViewById(R.id.btnAddQuestion)
         btnFacil = findViewById(R.id.btnFacil)
@@ -122,6 +135,8 @@ class ListaActivity : AppCompatActivity() {
     }
 
     private fun configurarFiltros() {
+        // Si no tienes los botones de filtro en el layout, usa estos botones del menú inferior
+        // como filtros rápidos con un menú de opciones
 
         // Agregar opción de filtro con un menú contextual
         recyclerViewLista.setOnLongClickListener {
@@ -129,6 +144,8 @@ class ListaActivity : AppCompatActivity() {
             true
         }
 
+        // Si tienes botones de filtro en el layout, descomenta esto:
+        /*
         btnFiltroTodas.setOnClickListener {
             filtroActual = "todas"
             actualizarEstiloFiltros()
@@ -152,6 +169,7 @@ class ListaActivity : AppCompatActivity() {
             actualizarEstiloFiltros()
             cargarPreguntasPorDificultad("dificil")
         }
+        */
     }
 
     private fun mostrarMenuFiltros() {
@@ -357,6 +375,13 @@ class ListaActivity : AppCompatActivity() {
                             "Pregunta eliminada exitosamente",
                             Toast.LENGTH_SHORT
                         ).show()
+
+                        // Mostrar notificación
+                        val userId = userSession.getUserId()
+                        val preferencias = preferenciasDRHelper.obtenerPreferencias(userId)
+                        if (preferencias.notificacionesActivadas) {
+                            notificacionesHelper.mostrarNotificacionPreguntaEliminada("")
+                        }
 
                         listaPreguntas.removeAt(position)
                         adapter.notifyItemRemoved(position)

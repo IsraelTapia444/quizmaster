@@ -11,6 +11,14 @@ import androidx.core.view.updatePadding
 import com.example.quizmaster.models.ApiResponse
 import com.example.quizmaster.models.PreguntaRequest
 import com.example.quizmaster.network.RetrofitClient
+import com.example.quizmaster.utils.ShakeDetector
+import com.example.quizmaster.utils.SonidosHelper
+import com.example.quizmaster.database.PreferenciasDBHelper
+import com.example.quizmaster.utils.UserSession
+import android.os.Vibrator
+import android.content.Context
+import android.os.VibrationEffect
+import android.os.Build
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -45,6 +53,13 @@ class PreguntaActivity : AppCompatActivity() {
     private var modoEdicion = false
     private var preguntaId = -1
 
+    // Helpers
+    private lateinit var shakeDetector: ShakeDetector
+    private lateinit var sonidosHelper: SonidosHelper
+    private lateinit var preferenciasDRHelper: PreferenciasDBHelper
+    private lateinit var userSession: UserSession
+    private var vibrator: Vibrator? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -52,6 +67,17 @@ class PreguntaActivity : AppCompatActivity() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
         setContentView(R.layout.activity_pregunta)
+
+        // Inicializar helpers
+        userSession = UserSession(this)
+        sonidosHelper = SonidosHelper(this)
+        preferenciasDRHelper = PreferenciasDBHelper(this)
+        vibrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+
+        // Inicializar detector de agitación
+        shakeDetector = ShakeDetector(this) {
+            onShakeDetected()
+        }
 
         // Inicializar componentes
         inicializarComponentes()
@@ -215,6 +241,13 @@ class PreguntaActivity : AppCompatActivity() {
                             Toast.LENGTH_SHORT
                         ).show()
 
+                        // Reproducir sonido de pregunta guardada
+                        val userId = userSession.getUserId()
+                        val preferencias = preferenciasDRHelper.obtenerPreferencias(userId)
+                        if (preferencias.sonidosActivados) {
+                            sonidosHelper.reproducirPreguntaGuardada()
+                        }
+
                         limpiarFormulario()
                     } else {
                         Toast.makeText(
@@ -304,6 +337,13 @@ class PreguntaActivity : AppCompatActivity() {
                             "Pregunta actualizada exitosamente",
                             Toast.LENGTH_SHORT
                         ).show()
+
+                        // Reproducir sonido de pregunta guardada
+                        val userId = userSession.getUserId()
+                        val preferencias = preferenciasDRHelper.obtenerPreferencias(userId)
+                        if (preferencias.sonidosActivados) {
+                            sonidosHelper.reproducirPreguntaGuardada()
+                        }
 
                         // Volver a ListaActivity
                         finish()
@@ -452,5 +492,56 @@ class PreguntaActivity : AppCompatActivity() {
             val intent = Intent(this, StatsActivity::class.java)
             startActivity(intent)
         }
+    }
+
+    /**
+     * Método llamado cuando se detecta agitación
+     */
+    private fun onShakeDetected() {
+        val userId = userSession.getUserId()
+        val preferencias = preferenciasDRHelper.obtenerPreferencias(userId)
+
+        // Vibrar si está activado
+        if (preferencias.vibracionActivada) {
+            vibrar()
+        }
+
+        // Limpiar formulario
+        limpiarFormulario()
+
+        // Mostrar Toast
+        Toast.makeText(this, "Formulario limpiado", Toast.LENGTH_SHORT).show()
+    }
+
+    /**
+     * Vibrar el dispositivo
+     */
+    private fun vibrar() {
+        vibrator?.let {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                it.vibrate(VibrationEffect.createOneShot(200, VibrationEffect.DEFAULT_AMPLITUDE))
+            } else {
+                @Suppress("DEPRECATION")
+                it.vibrate(200)
+            }
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Iniciar detector de agitación
+        shakeDetector.start()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        // Detener detector de agitación
+        shakeDetector.stop()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        // Liberar recursos
+        sonidosHelper.release()
     }
 }

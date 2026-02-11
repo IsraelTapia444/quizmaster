@@ -1,7 +1,6 @@
 package com.example.quizmaster
 
 import android.app.Application
-import com.example.quizmaster.utils.ConfigManager
 
 /**
  * Clase Application personalizada para QuizMaster
@@ -19,10 +18,5 @@ class QuizMasterApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        
-        // Inicializar el ConfigManager al inicio de la aplicación
-        // Esto asegura que la base de datos SQLite esté lista antes de que
-        // cualquier Activity intente acceder a la configuración
-        ConfigManager.init(this)
     }
 }

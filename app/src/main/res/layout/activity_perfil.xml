@@ -1,282 +1,62 @@
-<?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/background"
-    tools:context=".PerfilActivity">
-
-    <!-- ScrollView para contenido desplazable -->
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="24dp">
-
-            <!-- Cabecera con imagen de perfil -->
-            <ImageView
-                android:id="@+id/imgPerfil"
-                android:layout_width="120dp"
-                android:layout_height="120dp"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="32dp"
-                android:src="@drawable/perfil"
-                android:contentDescription="@string/profile_image" />
-
-            <!-- Nombre del usuario -->
-            <TextView
-                android:id="@+id/txtNombreUsuario"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="16dp"
-                android:text="USUARIO"
-                android:textColor="@color/white"
-                android:textSize="24sp"
-                android:textStyle="bold" />
-
-            <!-- Email del usuario -->
-            <TextView
-                android:id="@+id/txtEmailUsuario"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="4dp"
-                android:text="email@example.com"
-                android:textColor="@color/gray_light"
-                android:textSize="14sp" />
-
-            <!-- Divisor -->
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginTop="24dp"
-                android:layout_marginBottom="16dp"
-                android:background="@color/gray_dark" />
-
-            <!-- Sección de Estadísticas -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Estadísticas"
-                android:textColor="@color/white"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:layout_marginBottom="12dp" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center">
-
-                <!-- Total de partidas -->
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:gravity="center"
-                    android:padding="16dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Partidas"
-                        android:textColor="@color/gray_light"
-                        android:textSize="12sp" />
-
-                    <TextView
-                        android:id="@+id/txtTotalPartidas"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="0"
-                        android:textColor="@color/primary"
-                        android:textSize="28sp"
-                        android:textStyle="bold"
-                        android:layout_marginTop="4dp" />
-                </LinearLayout>
-
-                <!-- Mejor puntuación -->
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:gravity="center"
-                    android:padding="16dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Mejor Puntuación"
-                        android:textColor="@color/gray_light"
-                        android:textSize="12sp" />
-
-                    <TextView
-                        android:id="@+id/txtMejorPuntuacion"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="0%"
-                        android:textColor="@color/primary"
-                        android:textSize="28sp"
-                        android:textStyle="bold"
-                        android:layout_marginTop="4dp" />
-                </LinearLayout>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent" android:layout_height="match_parent" android:background="#1A1A2E" tools:context=".PerfilActivity">
+    <LinearLayout android:id="@+id/main" android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical">
+        <!--  Contenido del perfil con scroll  -->
+        <ScrollView android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1" android:fillViewport="true">
+            <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="24dp" android:gravity="center_horizontal">
+                <!--  Icono de usuario  -->
+                <ImageView android:layout_width="120dp" android:layout_height="120dp" android:src="@drawable/perfil" android:layout_marginTop="100dp" android:layout_marginBottom="16dp" android:contentDescription="Icono de perfil"/>
+                <!--  Nombre del usuario  -->
+                <TextView android:id="@+id/txtNombreUsuario" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="NOMBRE USUARIO" android:textColor="#F3C023" android:textSize="28sp" android:textStyle="bold" android:fontFamily="sans-serif-black" android:layout_marginBottom="8dp"/>
+                <!--  Email del usuario  -->
+                <TextView android:id="@+id/txtEmailUsuario" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="email@example.com" android:textColor="#F5F5F5" android:textSize="16sp" android:fontFamily="sans-serif" android:layout_marginBottom="48dp"/>
+                <!--  Card de estadísticas  -->
+                <androidx.cardview.widget.CardView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="32dp" app:cardBackgroundColor="#0F3460" app:cardCornerRadius="0dp" app:cardElevation="4dp">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="20dp">
+                        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="ESTADÍSTICAS" android:textColor="#F3C023" android:textSize="18sp" android:textStyle="bold" android:fontFamily="sans-serif-medium" android:layout_marginBottom="16dp"/>
+                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="8dp">
+                            <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Total Partidas:" android:textColor="#F5F5F5" android:textSize="16sp" android:fontFamily="sans-serif"/>
+                            <TextView android:id="@+id/txtTotalPartidas" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0" android:textColor="#F3C023" android:textSize="20sp" android:textStyle="bold" android:fontFamily="sans-serif-medium"/>
+                        </LinearLayout>
+                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
+                            <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="Mejor Puntuación:" android:textColor="#F5F5F5" android:textSize="16sp" android:fontFamily="sans-serif"/>
+                            <TextView android:id="@+id/txtMejorPuntuacion" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="0%" android:textColor="#F3C023" android:textSize="20sp" android:textStyle="bold" android:fontFamily="sans-serif-medium"/>
+                        </LinearLayout>
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+                <!--  CONFIGURACIÓN  -->
+                <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="CONFIGURACIÓN" android:textColor="#F3C023" android:textSize="20sp" android:textStyle="bold" android:fontFamily="sans-serif-black" android:layout_marginBottom="16dp"/>
+                <!--  Card de configuración  -->
+                <androidx.cardview.widget.CardView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginBottom="24dp" app:cardBackgroundColor="#0F3460" app:cardCornerRadius="0dp" app:cardElevation="4dp">
+                    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:padding="20dp">
+                        <!--  Switch Sonidos  -->
+                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="16dp">
+                            <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="🔊 Sonidos" android:textColor="#F5F5F5" android:textSize="16sp" android:fontFamily="sans-serif-medium"/>
+                            <Switch android:id="@+id/switchSonidos" android:layout_width="wrap_content" android:layout_height="wrap_content" android:checked="true" android:thumbTint="#F3C023" android:trackTint="#1A1A2E"/>
+                        </LinearLayout>
+                        <!--  Switch Vibración  -->
+                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginBottom="16dp">
+                            <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="📳 Vibración" android:textColor="#F5F5F5" android:textSize="16sp" android:fontFamily="sans-serif-medium"/>
+                            <Switch android:id="@+id/switchVibracion" android:layout_width="wrap_content" android:layout_height="wrap_content" android:checked="true" android:thumbTint="#F3C023" android:trackTint="#1A1A2E"/>
+                        </LinearLayout>
+                        <!--  Switch Notificaciones  -->
+                        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical">
+                            <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="🔔 Notificaciones" android:textColor="#F5F5F5" android:textSize="16sp" android:fontFamily="sans-serif-medium"/>
+                            <Switch android:id="@+id/switchNotificaciones" android:layout_width="wrap_content" android:layout_height="wrap_content" android:checked="true" android:thumbTint="#F3C023" android:trackTint="#1A1A2E"/>
+                        </LinearLayout>
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+                <!--  Botones de acción  -->
+                <Button android:id="@+id/btnVolver" android:layout_width="match_parent" android:layout_height="55dp" android:text="VOLVER" android:textColor="#1A1A2E" android:textSize="16sp" android:textStyle="bold" android:background="#F3C023" android:layout_marginBottom="12dp" android:fontFamily="sans-serif-black"/>
+                <Button android:id="@+id/btnCerrarSesion" android:layout_width="match_parent" android:layout_height="55dp" android:text="CERRAR SESIÓN" android:textColor="#F5F5F5" android:textSize="16sp" android:textStyle="bold" android:background="#E94560" android:fontFamily="sans-serif-black"/>
             </LinearLayout>
-
-            <!-- Divisor -->
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginBottom="16dp"
-                android:background="@color/gray_dark" />
-
-            <!-- Sección de Configuración -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Configuración"
-                android:textColor="@color/white"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:layout_marginBottom="12dp" />
-
-            <!-- Switch de Sonidos -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:padding="12dp"
-                android:background="@drawable/config_item_background">
-
-                <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:src="@drawable/ic_volume"
-                    android:contentDescription="@string/sound_icon"
-                    app:tint="@color/white" />
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginStart="16dp"
-                    android:text="Sonidos"
-                    android:textColor="@color/white"
-                    android:textSize="16sp" />
-
-                <androidx.appcompat.widget.SwitchCompat
-                    android:id="@+id/switchSonidos"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:checked="true" />
-            </LinearLayout>
-
-            <!-- Switch de Vibraciones -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:padding="12dp"
-                android:layout_marginTop="8dp"
-                android:background="@drawable/config_item_background">
-
-                <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:src="@drawable/ic_vibration"
-                    android:contentDescription="@string/vibration_icon"
-                    app:tint="@color/white" />
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginStart="16dp"
-                    android:text="Vibraciones"
-                    android:textColor="@color/white"
-                    android:textSize="16sp" />
-
-                <androidx.appcompat.widget.SwitchCompat
-                    android:id="@+id/switchVibraciones"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:checked="true" />
-            </LinearLayout>
-
-            <!-- Switch de Notificaciones -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:padding="12dp"
-                android:layout_marginTop="8dp"
-                android:background="@drawable/config_item_background">
-
-                <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:src="@drawable/ic_notifications"
-                    android:contentDescription="@string/notifications_icon"
-                    app:tint="@color/white" />
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginStart="16dp"
-                    android:text="Notificaciones"
-                    android:textColor="@color/white"
-                    android:textSize="16sp" />
-
-                <androidx.appcompat.widget.SwitchCompat
-                    android:id="@+id/switchNotificaciones"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:checked="true" />
-            </LinearLayout>
-
-            <!-- Divisor -->
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginTop="24dp"
-                android:layout_marginBottom="16dp"
-                android:background="@color/gray_dark" />
-
-            <!-- Botones de acción -->
-            <Button
-                android:id="@+id/btnCerrarSesion"
-                android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:text="Cerrar Sesión"
-                android:textColor="@color/white"
-                android:backgroundTint="@color/danger"
-                android:layout_marginTop="8dp" />
-
-            <Button
-                android:id="@+id/btnVolver"
-                android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:text="Volver"
-                android:textColor="@color/white"
-                android:backgroundTint="@color/gray_dark"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="16dp" />
-
+        </ScrollView>
+        <!--  Barra inferior de navegación  -->
+        <LinearLayout android:id="@+id/bottomNav" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:background="#E94560" android:padding="8dp" android:paddingBottom="56dp" android:gravity="center">
+            <Button android:id="@+id/btnAddQuestion" android:layout_width="0dp" android:layout_height="50dp" android:layout_weight="1" android:layout_margin="4dp" android:text="Añadir" android:textColor="#F5F5F5" android:textSize="11sp" android:textStyle="bold" android:background="#0F3460" android:fontFamily="sans-serif-medium"/>
+            <Button android:id="@+id/btnFacil" android:layout_width="0dp" android:layout_height="50dp" android:layout_weight="1" android:layout_margin="4dp" android:text="Fácil" android:textColor="#1A1A2E" android:textSize="11sp" android:textStyle="bold" android:background="#F3C023" android:fontFamily="sans-serif-medium"/>
+            <Button android:id="@+id/btnMedio" android:layout_width="0dp" android:layout_height="50dp" android:layout_weight="1" android:layout_margin="4dp" android:text="Medio" android:textColor="#1A1A2E" android:textSize="11sp" android:textStyle="bold" android:background="#F3C023" android:fontFamily="sans-serif-medium"/>
+            <Button android:id="@+id/btnDificil" android:layout_width="0dp" android:layout_height="50dp" android:layout_weight="1" android:layout_margin="4dp" android:text="Difícil" android:textColor="#1A1A2E" android:textSize="11sp" android:textStyle="bold" android:background="#F3C023" android:fontFamily="sans-serif-medium"/>
+            <Button android:id="@+id/btnStats" android:layout_width="0dp" android:layout_height="50dp" android:layout_weight="1" android:layout_margin="4dp" android:text="Stats" android:textColor="#F5F5F5" android:textSize="11sp" android:textStyle="bold" android:background="#0F3460" android:fontFamily="sans-serif-medium"/>
         </LinearLayout>
-    </ScrollView>
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
+</FrameLayout>
