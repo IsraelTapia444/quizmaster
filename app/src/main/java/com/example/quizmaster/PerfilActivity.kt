@@ -126,38 +126,85 @@ class PerfilActivity : AppCompatActivity() {
         val userId = userSession.getUserId()
         val preferencias = preferenciasDRHelper.obtenerPreferencias(userId)
 
-        // Establecer estado de los switches
+        // Establecer estado de los switches SIN triggear listeners
+        switchSonidos.setOnCheckedChangeListener(null)
+        switchVibracion.setOnCheckedChangeListener(null)
+        switchNotificaciones.setOnCheckedChangeListener(null)
+
         switchSonidos.isChecked = preferencias.sonidosActivados
         switchVibracion.isChecked = preferencias.vibracionActivada
         switchNotificaciones.isChecked = preferencias.notificacionesActivadas
 
-        // Configurar listeners
+        // Configurar listeners DESPUÉS de establecer estados
         switchSonidos.setOnCheckedChangeListener { _, isChecked ->
-            preferenciasDRHelper.actualizarSonidos(userId, isChecked)
-            Toast.makeText(
-                this,
-                if (isChecked) "Sonidos activados" else "Sonidos desactivados",
-                Toast.LENGTH_SHORT
-            ).show()
+            val success = preferenciasDRHelper.actualizarSonidos(userId, isChecked)
+            if (success) {
+                Toast.makeText(
+                    this,
+                    if (isChecked) "Sonidos activados" else "Sonidos desactivados",
+                    Toast.LENGTH_SHORT
+                ).show()
+            } else {
+                Toast.makeText(this, "Error al actualizar preferencia", Toast.LENGTH_SHORT).show()
+                // Revertir el switch si falló
+                switchSonidos.setOnCheckedChangeListener(null)
+                switchSonidos.isChecked = !isChecked
+                switchSonidos.setOnCheckedChangeListener { _, checked ->
+                    actualizarSonidos(checked)
+                }
+            }
         }
 
         switchVibracion.setOnCheckedChangeListener { _, isChecked ->
-            preferenciasDRHelper.actualizarVibracion(userId, isChecked)
-            Toast.makeText(
-                this,
-                if (isChecked) "Vibración activada" else "Vibración desactivada",
-                Toast.LENGTH_SHORT
-            ).show()
+            val success = preferenciasDRHelper.actualizarVibracion(userId, isChecked)
+            if (success) {
+                Toast.makeText(
+                    this,
+                    if (isChecked) "Vibración activada" else "Vibración desactivada",
+                    Toast.LENGTH_SHORT
+                ).show()
+            } else {
+                Toast.makeText(this, "Error al actualizar preferencia", Toast.LENGTH_SHORT).show()
+                switchVibracion.setOnCheckedChangeListener(null)
+                switchVibracion.isChecked = !isChecked
+                switchVibracion.setOnCheckedChangeListener { _, checked ->
+                    actualizarVibracion(checked)
+                }
+            }
         }
 
         switchNotificaciones.setOnCheckedChangeListener { _, isChecked ->
-            preferenciasDRHelper.actualizarNotificaciones(userId, isChecked)
-            Toast.makeText(
-                this,
-                if (isChecked) "Notificaciones activadas" else "Notificaciones desactivadas",
-                Toast.LENGTH_SHORT
-            ).show()
+            val success = preferenciasDRHelper.actualizarNotificaciones(userId, isChecked)
+            if (success) {
+                Toast.makeText(
+                    this,
+                    if (isChecked) "Notificaciones activadas" else "Notificaciones desactivadas",
+                    Toast.LENGTH_SHORT
+                ).show()
+            } else {
+                Toast.makeText(this, "Error al actualizar preferencia", Toast.LENGTH_SHORT).show()
+                switchNotificaciones.setOnCheckedChangeListener(null)
+                switchNotificaciones.isChecked = !isChecked
+                switchNotificaciones.setOnCheckedChangeListener { _, checked ->
+                    actualizarNotificaciones(checked)
+                }
+            }
         }
+    }
+
+    private fun actualizarSonidos(isChecked: Boolean) {
+        val userId = userSession.getUserId()
+        preferenciasDRHelper.actualizarSonidos(userId, isChecked)
+    }
+
+    private fun actualizarVibracion(isChecked: Boolean) {
+        val userId = userSession.getUserId()
+        preferenciasDRHelper.actualizarVibracion(userId, isChecked)
+    }
+
+    private fun actualizarNotificaciones(isChecked: Boolean) {
+        val userId = userSession.getUserId()
+        preferenciasDRHelper.actualizarNotificaciones(userId, isChecked)
     }
 
     private fun configurarBotones() {

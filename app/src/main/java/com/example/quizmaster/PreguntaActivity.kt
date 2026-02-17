@@ -72,7 +72,15 @@ class PreguntaActivity : AppCompatActivity() {
         userSession = UserSession(this)
         sonidosHelper = SonidosHelper(this)
         preferenciasDRHelper = PreferenciasDBHelper(this)
-        vibrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+
+        // Obtener servicio de vibración
+        vibrator = try {
+            getSystemService(Context.VIBRATOR_SERVICE) as? Vibrator
+        } catch (e: Exception) {
+            android.util.Log.e("PreguntaActivity", "Error obteniendo Vibrator: ${e.message}")
+            null
+        }
+        android.util.Log.d("PreguntaActivity", "Vibrator inicializado: ${vibrator != null}")
 
         // Inicializar detector de agitación
         shakeDetector = ShakeDetector(this) {
@@ -517,13 +525,24 @@ class PreguntaActivity : AppCompatActivity() {
      * Vibrar el dispositivo
      */
     private fun vibrar() {
-        vibrator?.let {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                it.vibrate(VibrationEffect.createOneShot(200, VibrationEffect.DEFAULT_AMPLITUDE))
-            } else {
-                @Suppress("DEPRECATION")
-                it.vibrate(200)
+        try {
+            if (vibrator == null) {
+                vibrator = getSystemService(Context.VIBRATOR_SERVICE) as? Vibrator
             }
+
+            vibrator?.let { vib ->
+                // Intentar vibrar incluso si hasVibrator() devuelve false
+                // En algunos dispositivos puede funcionar de todos modos
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    vib.vibrate(VibrationEffect.createOneShot(200, VibrationEffect.DEFAULT_AMPLITUDE))
+                } else {
+                    @Suppress("DEPRECATION")
+                    vib.vibrate(200)
+                }
+            }
+        } catch (e: Exception) {
+            // Si falla, no hacer nada (dispositivo sin vibrador)
+            android.util.Log.d("PreguntaActivity", "Vibración no disponible: ${e.message}")
         }
     }
 

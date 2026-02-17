@@ -1,6 +1,5 @@
 package com.example.quizmaster
 
-import android.content.Context
 import android.content.Intent
 import android.media.MediaPlayer
 import android.os.Bundle
@@ -24,11 +23,20 @@ import com.example.quizmaster.database.PreferenciasDBHelper
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.os.Build
+import android.content.pm.PackageManager
+import android.Manifest
+import android.content.Context
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
 class MainActivity : AppCompatActivity() {
+
+    companion object {
+        private const val NOTIFICATION_PERMISSION_CODE = 100
+    }
 
     // Componentes UI - Juego
     private lateinit var tvPreguntaNumero: TextView
@@ -105,6 +113,9 @@ class MainActivity : AppCompatActivity() {
         notificacionesHelper = NotificacionesHelper(this)
         preferenciasDRHelper = PreferenciasDBHelper(this)
         vibrator = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+
+        // Solicitar permiso de notificaciones para Android 13+
+        solicitarPermisoNotificaciones()
 
         // Verificar si está logueado
         if (!userSession.isLoggedIn()) {
@@ -532,6 +543,25 @@ class MainActivity : AppCompatActivity() {
                 tvComparacion.text = ""
             }
         })
+    }
+
+    /**
+     * Solicitar permiso de notificaciones para Android 13+
+     */
+    private fun solicitarPermisoNotificaciones() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+                    NOTIFICATION_PERMISSION_CODE
+                )
+            }
+        }
     }
 
     private fun configurarMenuInferior() {

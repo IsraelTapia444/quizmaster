@@ -102,8 +102,11 @@ class PreferenciasDBHelper(context: Context) : SQLiteOpenHelper(context, DATABAS
                     vibracionActivada = cursor.getInt(vibracionIndex) == 1,
                     notificacionesActivadas = cursor.getInt(notificacionesIndex) == 1
                 )
+
+                android.util.Log.d("PreferenciasDB", "Preferencias cargadas: sonidos=${preferencias.sonidosActivados}, vibracion=${preferencias.vibracionActivada}, notif=${preferencias.notificacionesActivadas}")
             } else {
                 // No existen preferencias, crear por defecto (todo activado)
+                android.util.Log.d("PreferenciasDB", "Creando preferencias por defecto para usuario $usuarioId")
                 guardarPreferencias(usuarioId, true, true, true)
             }
 
@@ -121,20 +124,45 @@ class PreferenciasDBHelper(context: Context) : SQLiteOpenHelper(context, DATABAS
      * Actualizar solo sonidos
      */
     fun actualizarSonidos(usuarioId: Int, activado: Boolean): Boolean {
+        android.util.Log.d("PreferenciasDB", "Actualizando sonidos: usuario=$usuarioId, activado=$activado")
+
         val db = writableDatabase
         val values = ContentValues().apply {
             put(COLUMN_SONIDOS, if (activado) 1 else 0)
         }
 
         return try {
-            val rows = db.update(
+            // Verificar si existe el registro
+            val cursor = db.query(
                 TABLE_PREFERENCIAS,
-                values,
+                arrayOf(COLUMN_ID),
                 "$COLUMN_USUARIO_ID = ?",
-                arrayOf(usuarioId.toString())
+                arrayOf(usuarioId.toString()),
+                null,
+                null,
+                null
             )
-            rows > 0
+
+            val exists = cursor.count > 0
+            cursor.close()
+
+            if (!exists) {
+                // Si no existe, crear con valores por defecto
+                android.util.Log.d("PreferenciasDB", "Registro no existe, creando...")
+                guardarPreferencias(usuarioId, activado, true, true)
+                true
+            } else {
+                val rows = db.update(
+                    TABLE_PREFERENCIAS,
+                    values,
+                    "$COLUMN_USUARIO_ID = ?",
+                    arrayOf(usuarioId.toString())
+                )
+                android.util.Log.d("PreferenciasDB", "Filas actualizadas: $rows")
+                rows > 0
+            }
         } catch (e: Exception) {
+            android.util.Log.e("PreferenciasDB", "Error actualizando sonidos: ${e.message}")
             false
         } finally {
             db.close()
@@ -142,23 +170,46 @@ class PreferenciasDBHelper(context: Context) : SQLiteOpenHelper(context, DATABAS
     }
 
     /**
-     * Actualizar solo vibraciĂłn
+     * Actualizar solo vibración
      */
     fun actualizarVibracion(usuarioId: Int, activado: Boolean): Boolean {
+        android.util.Log.d("PreferenciasDB", "Actualizando vibración: usuario=$usuarioId, activado=$activado")
+
         val db = writableDatabase
         val values = ContentValues().apply {
             put(COLUMN_VIBRACION, if (activado) 1 else 0)
         }
 
         return try {
-            val rows = db.update(
+            val cursor = db.query(
                 TABLE_PREFERENCIAS,
-                values,
+                arrayOf(COLUMN_ID),
                 "$COLUMN_USUARIO_ID = ?",
-                arrayOf(usuarioId.toString())
+                arrayOf(usuarioId.toString()),
+                null,
+                null,
+                null
             )
-            rows > 0
+
+            val exists = cursor.count > 0
+            cursor.close()
+
+            if (!exists) {
+                android.util.Log.d("PreferenciasDB", "Registro no existe, creando...")
+                guardarPreferencias(usuarioId, true, activado, true)
+                true
+            } else {
+                val rows = db.update(
+                    TABLE_PREFERENCIAS,
+                    values,
+                    "$COLUMN_USUARIO_ID = ?",
+                    arrayOf(usuarioId.toString())
+                )
+                android.util.Log.d("PreferenciasDB", "Filas actualizadas: $rows")
+                rows > 0
+            }
         } catch (e: Exception) {
+            android.util.Log.e("PreferenciasDB", "Error actualizando vibración: ${e.message}")
             false
         } finally {
             db.close()
@@ -169,20 +220,43 @@ class PreferenciasDBHelper(context: Context) : SQLiteOpenHelper(context, DATABAS
      * Actualizar solo notificaciones
      */
     fun actualizarNotificaciones(usuarioId: Int, activado: Boolean): Boolean {
+        android.util.Log.d("PreferenciasDB", "Actualizando notificaciones: usuario=$usuarioId, activado=$activado")
+
         val db = writableDatabase
         val values = ContentValues().apply {
             put(COLUMN_NOTIFICACIONES, if (activado) 1 else 0)
         }
 
         return try {
-            val rows = db.update(
+            val cursor = db.query(
                 TABLE_PREFERENCIAS,
-                values,
+                arrayOf(COLUMN_ID),
                 "$COLUMN_USUARIO_ID = ?",
-                arrayOf(usuarioId.toString())
+                arrayOf(usuarioId.toString()),
+                null,
+                null,
+                null
             )
-            rows > 0
+
+            val exists = cursor.count > 0
+            cursor.close()
+
+            if (!exists) {
+                android.util.Log.d("PreferenciasDB", "Registro no existe, creando...")
+                guardarPreferencias(usuarioId, true, true, activado)
+                true
+            } else {
+                val rows = db.update(
+                    TABLE_PREFERENCIAS,
+                    values,
+                    "$COLUMN_USUARIO_ID = ?",
+                    arrayOf(usuarioId.toString())
+                )
+                android.util.Log.d("PreferenciasDB", "Filas actualizadas: $rows")
+                rows > 0
+            }
         } catch (e: Exception) {
+            android.util.Log.e("PreferenciasDB", "Error actualizando notificaciones: ${e.message}")
             false
         } finally {
             db.close()

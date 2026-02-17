@@ -26,11 +26,19 @@ class SonidosHelper(private val context: Context) {
                 RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
             )
             sonidoAcierto?.setVolume(0.7f, 0.7f)
+            sonidoAcierto?.setOnCompletionListener {
+                it.seekTo(0)
+            }
 
-            // Sonido de fallo - Alarma (más corto)
-            val uriAlarma = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE)
-            sonidoFallo = MediaPlayer.create(context, uriAlarma)
+            // Sonido de fallo - Notificación corta
+            sonidoFallo = MediaPlayer.create(
+                context,
+                RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+            )
             sonidoFallo?.setVolume(0.5f, 0.5f)
+            sonidoFallo?.setOnCompletionListener {
+                it.seekTo(0)
+            }
 
             // Sonido de fin de partida - Ringtone
             sonidoFinPartida = MediaPlayer.create(
@@ -38,6 +46,9 @@ class SonidosHelper(private val context: Context) {
                 RingtoneManager.getDefaultUri(RingtoneManager.TYPE_RINGTONE)
             )
             sonidoFinPartida?.setVolume(0.8f, 0.8f)
+            sonidoFinPartida?.setOnCompletionListener {
+                it.seekTo(0)
+            }
 
             // Sonido de pregunta guardada - Notificación
             sonidoPreguntaGuardada = MediaPlayer.create(
@@ -45,30 +56,12 @@ class SonidosHelper(private val context: Context) {
                 RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
             )
             sonidoPreguntaGuardada?.setVolume(0.7f, 0.7f)
-
-            // Limitar duración a 2 segundos máximo
-            configurarDuracionMaxima(sonidoAcierto, 1000)
-            configurarDuracionMaxima(sonidoFallo, 1000)
-            configurarDuracionMaxima(sonidoFinPartida, 2000)
-            configurarDuracionMaxima(sonidoPreguntaGuardada, 1000)
+            sonidoPreguntaGuardada?.setOnCompletionListener {
+                it.seekTo(0)
+            }
 
         } catch (e: Exception) {
             android.util.Log.e("SonidosHelper", "Error inicializando sonidos: ${e.message}")
-        }
-    }
-
-    /**
-     * Configurar duración máxima de un sonido
-     */
-    private fun configurarDuracionMaxima(mediaPlayer: MediaPlayer?, maxDuration: Int) {
-        mediaPlayer?.setOnPreparedListener {
-            // Detener después de maxDuration milisegundos
-            android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
-                if (it.isPlaying) {
-                    it.pause()
-                    it.seekTo(0)
-                }
-            }, maxDuration.toLong())
         }
     }
 
@@ -105,10 +98,17 @@ class SonidosHelper(private val context: Context) {
      */
     private fun reproducirSonido(mediaPlayer: MediaPlayer?) {
         try {
-            if (mediaPlayer?.isPlaying == true) {
-                mediaPlayer.seekTo(0)
-            } else {
-                mediaPlayer?.start()
+            mediaPlayer?.let {
+                // Si ya está reproduciéndose, no hacer nada
+                if (it.isPlaying) {
+                    return
+                }
+
+                // Resetear al inicio
+                it.seekTo(0)
+
+                // Reproducir
+                it.start()
             }
         } catch (e: Exception) {
             android.util.Log.e("SonidosHelper", "Error reproduciendo sonido: ${e.message}")
