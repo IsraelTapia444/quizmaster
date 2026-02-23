@@ -1,6 +1,9 @@
 package com.example.quizmaster
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.location.Location
 import android.os.Bundle
 import android.widget.Button
 import android.widget.Switch
@@ -8,20 +11,32 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 import com.example.quizmaster.utils.UserSession
 import com.example.quizmaster.database.PreferenciasDBHelper
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MarkerOptions
 
-class PerfilActivity : AppCompatActivity() {
+class PerfilActivity : AppCompatActivity(), OnMapReadyCallback {
+
+    companion object {
+        private const val LOCATION_PERMISSION_REQUEST_CODE = 200
+    }
 
     // Componentes UI
     private lateinit var txtNombreUsuario: TextView
     private lateinit var txtEmailUsuario: TextView
-    private lateinit var txtTotalPartidas: TextView
-    private lateinit var txtMejorPuntuacion: TextView
     private lateinit var btnCerrarSesion: Button
     private lateinit var btnVolver: Button
 
@@ -41,6 +56,11 @@ class PerfilActivity : AppCompatActivity() {
     private lateinit var userSession: UserSession
     private lateinit var preferenciasDRHelper: PreferenciasDBHelper
 
+    // Google Maps
+    private var googleMap: GoogleMap? = null
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private var currentLocation: Location? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -52,6 +72,9 @@ class PerfilActivity : AppCompatActivity() {
         // Inicializar UserSession y DB
         userSession = UserSession(this)
         preferenciasDRHelper = PreferenciasDBHelper(this)
+
+        // Inicializar cliente de ubicación
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
         // Verificar que el usuario esté logueado
         if (!userSession.isLoggedIn()) {
@@ -79,13 +102,14 @@ class PerfilActivity : AppCompatActivity() {
 
         // Configurar menú inferior
         configurarMenuInferior()
+
+        // Inicializar mapa
+        inicializarMapa()
     }
 
     private fun inicializarComponentes() {
         txtNombreUsuario = findViewById(R.id.txtNombreUsuario)
         txtEmailUsuario = findViewById(R.id.txtEmailUsuario)
-        txtTotalPartidas = findViewById(R.id.txtTotalPartidas)
-        txtMejorPuntuacion = findViewById(R.id.txtMejorPuntuacion)
         btnCerrarSesion = findViewById(R.id.btnCerrarSesion)
         btnVolver = findViewById(R.id.btnVolver)
 
@@ -116,10 +140,6 @@ class PerfilActivity : AppCompatActivity() {
 
         txtNombreUsuario.text = nombreUsuario.uppercase()
         txtEmailUsuario.text = email
-
-        // TODO: Cargar estadísticas del usuario desde la API
-        txtTotalPartidas.text = "0"
-        txtMejorPuntuacion.text = "0%"
     }
 
     private fun cargarPreferencias() {
@@ -146,7 +166,6 @@ class PerfilActivity : AppCompatActivity() {
                 ).show()
             } else {
                 Toast.makeText(this, "Error al actualizar preferencia", Toast.LENGTH_SHORT).show()
-                // Revertir el switch si falló
                 switchSonidos.setOnCheckedChangeListener(null)
                 switchSonidos.isChecked = !isChecked
                 switchSonidos.setOnCheckedChangeListener { _, checked ->
@@ -271,5 +290,164 @@ class PerfilActivity : AppCompatActivity() {
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(intent)
         finish()
+    }
+
+    /**
+     * Inicializar Google Maps
+     */
+    private fun inicializarMapa() {
+        val mapFragment = supportFragmentManager.findFragmentById(R.id.mapFragment) as? SupportMapFragment
+        mapFragment?.getMapAsync(this)
+    }
+
+    /**
+     * Callback cuando el mapa está listo
+     */
+    override fun onMapReady(map: GoogleMap) {
+        googleMap = map
+
+        // Configurar UI del mapa
+        googleMap?.apply {
+            uiSettings.isZoomControlsEnabled = true
+            uiSettings.isCompassEnabled = true
+            uiSettings.isMyLocationButtonEnabled = true
+        }
+
+        // Solicitar permisos y obtener ubicación
+        verificarPermisosUbicacion()
+    }
+
+    /**
+     * Verificar y solicitar permisos de ubicación
+     */
+    private fun verificarPermisosUbicacion() {
+        if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
+            // Permiso concedido, obtener ubicación
+            obtenerUbicacionActual()
+        } else {
+            // Solicitar permiso
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                ),
+                LOCATION_PERMISSION_REQUEST_CODE
+            )
+        }
+    }
+
+    /**
+     * Obtener ubicación actual del usuario
+     */
+    private fun obtenerUbicacionActual() {
+        try {
+            if (ContextCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                ) == PackageManager.PERMISSION_GRANTED
+            ) {
+                // Habilitar "Mi ubicación" en el mapa
+                googleMap?.isMyLocationEnabled = true
+
+                // Obtener última ubicación conocida
+                fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
+                    if (location != null) {
+                        currentLocation = location
+                        mostrarUbicacionEnMapa(location)
+                    } else {
+                        Toast.makeText(
+                            this,
+                            "No se pudo obtener la ubicación actual",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        // Mostrar ubicación por defecto (ejemplo: Madrid)
+                        mostrarUbicacionPorDefecto()
+                    }
+                }
+            }
+        } catch (e: SecurityException) {
+            Toast.makeText(this, "Error de permisos de ubicación", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    /**
+     * Mostrar ubicación en el mapa con marcador
+     */
+    private fun mostrarUbicacionEnMapa(location: Location) {
+        val ubicacion = LatLng(location.latitude, location.longitude)
+
+        googleMap?.apply {
+            // Limpiar marcadores anteriores
+            clear()
+
+            // Agregar marcador en la ubicación actual
+            addMarker(
+                MarkerOptions()
+                    .position(ubicacion)
+                    .title("Mi Ubicación")
+            )
+
+            // Mover cámara a la ubicación con zoom
+            animateCamera(CameraUpdateFactory.newLatLngZoom(ubicacion, 15f))
+        }
+    }
+
+    /**
+     * Mostrar ubicación por defecto si no se puede obtener la real
+     */
+    private fun mostrarUbicacionPorDefecto() {
+        // Ubicación por defecto: Salamanca, España
+        val salamanca = LatLng(40.9701, -5.6635)
+
+        googleMap?.apply {
+            clear()
+            addMarker(
+                MarkerOptions()
+                    .position(salamanca)
+                    .title("Ubicación por defecto")
+            )
+            animateCamera(CameraUpdateFactory.newLatLngZoom(salamanca, 12f))
+        }
+    }
+
+    /**
+     * Manejar resultado de solicitud de permisos
+     */
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        when (requestCode) {
+            LOCATION_PERMISSION_REQUEST_CODE -> {
+                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // Permiso concedido
+                    obtenerUbicacionActual()
+                } else {
+                    // Permiso denegado
+                    Toast.makeText(
+                        this,
+                        "Permiso de ubicación denegado. Mostrando ubicación por defecto.",
+                        Toast.LENGTH_LONG
+                    ).show()
+                    mostrarUbicacionPorDefecto()
+                }
+            }
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Actualizar ubicación cada vez que se abre el perfil
+        if (googleMap != null) {
+            verificarPermisosUbicacion()
+        }
     }
 }

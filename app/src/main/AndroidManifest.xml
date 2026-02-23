@@ -8,6 +8,10 @@
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
+    <!-- Permisos de ubicación para Google Maps -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
     <application
         android:name=".QuizMasterApplication"
         android:usesCleartextTraffic="true"
@@ -18,6 +22,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar"
         tools:targetApi="31">
+        <!-- IMPORTANTE: Reemplaza TU_API_KEY_AQUI con tu API Key real -->
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyAsLACvl1wFEnB-xdIY52_4csdevVgxLmw" />
         <activity
             android:name=".PerfilActivity"
             android:exported="false" />
